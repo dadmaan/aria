@@ -1,0 +1,76 @@
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+exclude = """
+(
+    \\.eggs|
+    \\.git|
+    \\.mypy_cache|
+    \\.pytest_cache|
+    build|
+    dist|
+    notebooks
+)
+"""
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    "build",
+    "dist",
+    "notebooks",
+    "scripts",
+]
+extend-include = ["scripts/run_training.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I"]
+ignore = ["E203", "E266", "E501"]
+per-file-ignores = {"__init__.py" = ["F401"]}
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report=term-missing --cov-report=html --cov-fail-under=80"
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "src/models/*",
+    "src/ghsom/*",
+    "src/preprocessing/quantization.py",
+    "src/preprocessing/features_*",
+    "src/preprocessing/feature_extraction/features_*",
+    "src/utils/os_utils.py",
+    "src/utils/performance_benchmark.py",
+    "src/utils/plotting_utils.py",
+    "src/utils/lstm_utils.py",
+    "src/utils/replay_buffer*.py",
+    "src/utils/model_checkpoints.py",
+]
+
+[tool.coverage.report]
+include = [
+    "src/environments/*",
+    "src/environment_manager.py",
+    "src/preprocessing/dimensionality_reduction/*",
+    "src/preprocessing/feature_extraction/*",
+    "src/utils/reward_manager.py",
+    "src/agents/ghsom_perceiving_agent.py",
+    "src/adapters/tianshou_adapter.py",
+    "src/training/*",
+    "src/networks/*",
+]
+exclude_lines = [
+    "if __name__ == \"__main__\":",
+    "pragma: no cover",
+]

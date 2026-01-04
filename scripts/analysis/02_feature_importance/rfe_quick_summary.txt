@@ -1,0 +1,87 @@
+================================================================================
+RECURSIVE FEATURE ELIMINATION (RFE) ANALYSIS - QUICK SUMMARY
+================================================================================
+
+Analysis Date: 2025-11-13
+Target Variable: muspy_pitch_entropy (musical pitch complexity)
+
+--------------------------------------------------------------------------------
+KEY RESULTS
+--------------------------------------------------------------------------------
+
+1. OPTIMAL FEATURE SET: 5 features (from 27 original)
+   ✓ pm_note_count
+   ✓ muspy_pitch_class_entropy
+   ✓ muspy_pitch_range
+   ✓ muspy_n_pitches_used
+   ✓ muspy_n_pitch_classes_used
+
+2. PERFORMANCE METRICS:
+   - Feature Reduction: 81% (27 → 5 features)
+   - Cross-Validation R²: 0.9970
+   - Improvement over baseline: +0.10%
+   - RMSE: ~0.05
+   - MAE: ~0.03
+
+3. DATA PREPROCESSING:
+   - Removed 3 features (100% missing): drum pattern features
+   - Removed 4 features (>40% missing): theory features
+   - Imputed 3 features (<10% missing): intervals and groove
+   - Scaling: RobustScaler (due to outliers)
+   - Final dataset: 532 samples × 27 features
+
+4. BASELINE MODEL COMPARISON:
+   Best Model: GradientBoosting
+   - CV R²: 0.9961 ± 0.0017
+   - CV RMSE: 0.0560
+   - CV MAE: 0.0285
+
+5. TOP 15 FEATURE RANKINGS:
+   Rank  1: pm_note_count [SELECTED]
+   Rank  1: muspy_pitch_class_entropy [SELECTED]
+   Rank  1: muspy_pitch_range [SELECTED]
+   Rank  1: muspy_n_pitches_used [SELECTED]
+   Rank  1: muspy_n_pitch_classes_used [SELECTED]
+   Rank  2: muspy_polyphony
+   Rank  3: pm_interval_range_min
+   Rank  4: pm_length_seconds
+   Rank  5: pm_note_density
+   Rank  6: pm_average_pitch_hz
+   Rank  7: pm_energy
+   Rank  8: muspy_empty_measure_rate
+   Rank  9: pm_pitch_range_max_note
+   Rank 10: pm_average_velocity
+   Rank 11: pm_tempo_bpm
+
+--------------------------------------------------------------------------------
+KEY INSIGHTS
+--------------------------------------------------------------------------------
+
+✓ Pitch entropy is primarily determined by PITCH DIVERSITY features
+✓ All 5 selected features relate to pitch usage and distribution
+✓ Tempo, dynamics, and structure are NOT important for pitch entropy
+✓ muspy_n_pitches_used is the dominant predictor (94-96% importance)
+✓ Feature reduction dramatically improves model parsimony
+
+--------------------------------------------------------------------------------
+OUTPUT FILES
+--------------------------------------------------------------------------------
+
+Data Files:
+  • rfe_rankings.csv (feature rankings)
+  • rfe_elimination_order.csv (elimination sequence)
+  • model_comparison.csv (baseline model performance)
+  • feature_importance_combined.csv (all importance methods)
+  • rfecv_configurations.csv (configuration testing results)
+
+Visualizations:
+  • rfe_cv_scores.png (cross-validation curve)
+  • feature_importance_comparison.png (4-panel comparison)
+
+Reports:
+  • rfe_summary.json (structured results)
+  • RFE_ANALYSIS_REPORT.md (comprehensive report)
+
+All files in: experiments_feature_analysis/feature_analysis_20251113_214037/
+
+================================================================================

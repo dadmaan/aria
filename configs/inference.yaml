@@ -1,0 +1,404 @@
+# ============================================================================
+# INFERENCE AND HIL SIMULATION CONFIGURATION
+# ============================================================================
+# This configuration file contains all parameters for inference, human-in-the-loop
+# (HIL) preference-guided simulation, sequence generation, and analysis.
+#
+# Version: 2.0 (OPTIMIZED)
+# Date: 2025-12-14
+# Optimization: Based on deep investigation of HIL simulation results
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# PATHS AND RESOURCES
+# ----------------------------------------------------------------------------
+paths:
+  # Default paths for cluster profiles and GHSOM models
+  cluster_profiles: "artifacts/ghsom_commu_tsne/cluster_profiles.csv"
+  ghsom_dir: "artifacts/ghsom_commu_tsne"
+  features_dir: "artifacts/features"
+  
+  # Output directories
+  output_base: "outputs"
+  inference_output: "outputs/inference"
+  simulation_output: "outputs/hil_simulation"
+  analysis_output: "outputs/analysis"
+
+# ----------------------------------------------------------------------------
+# FEEDBACK SIMULATION PARAMETERS
+# ----------------------------------------------------------------------------
+feedback:
+  # Base rating for neutral sequences (1-5 scale)
+  base_rating: 3.0
+  
+  # Human-like noise parameters
+  noise_std: 0.3              # Standard deviation for overall rating noise
+  dimension_noise:
+    quality: 0.2              # Noise std for quality dimension
+    coherence: 0.3            # Noise std for coherence dimension
+    creativity: 0.4           # Noise std for creativity dimension
+    musicality: 0.2           # Noise std for musicality dimension
+  
+  # Rating calculation parameters (OPTIMIZED: +25-33% stronger signals)
+  desirable_multiplier: 2.5   # Bonus per unit of desirable ratio (+2.5 max) [was 2.0]
+  undesirable_multiplier: 4.0 # Penalty per unit of undesirable ratio (-4.0 max) [was 3.0]
+  
+  # Feedback dimension weights (for weighted score calculation)
+  weights:
+    quality: 0.3
+    coherence: 0.2
+    creativity: 0.2
+    musicality: 0.3
+  
+  # Strictness parameter (scales undesirable penalty) (OPTIMIZED: +20%)
+  strictness: 1.2             # 1.2 = slightly strict [was 1.0]
+
+  # Feedback thresholds for different adaptation triggers (OPTIMIZED)
+  thresholds:
+    low: 2.5                  # Lenient threshold
+    medium: 3.0               # Standard threshold
+    high: 3.5                 # Strict threshold
+    default: 2.8              # OPTIMIZED: Trigger adaptation more often [was 3.0]
+
+# ----------------------------------------------------------------------------
+# PREFERENCE SCENARIO DEFAULTS
+# ----------------------------------------------------------------------------
+scenarios:
+  # Target values (OPTIMIZED: Realistic targets based on cluster coverage and natural rates)
+  target_values:
+    calm_relaxation: 0.5      # OPTIMIZED: 7 clusters, 34% natural rate [was 0.6]
+    energetic_drive: 0.15     # CRITICAL: Only 1 cluster (3% natural), was impossible [was 0.5]
+    piano_focus: 0.6          # Good: 14 clusters, 59% natural rate [was 0.7]
+    strings_ensemble: 0.45    # OPTIMIZED: 6 vs 14 cluster imbalance [was 0.6]
+    melodic_focus: 0.5        # Good: 11 clusters, 53.5% natural rate [was 0.6]
+    ambient_background: 0.5   # Good: 9 clusters, 37% natural rate, maintained
+    intrinsic_feel: 0.20      # CRITICAL: Only 2 clusters (10.5% natural) [was 0.4]
+  
+  # Default scenario configuration
+  default_target_value: 0.5   # Used when creating custom scenarios
+
+# ----------------------------------------------------------------------------
+# ADAPTATION PARAMETERS
+# ----------------------------------------------------------------------------
+adaptation:
+  # Adaptation mode: "q_penalty" or "reward_shaping"
+  default_mode: "reward_shaping"
+
+  # Q-value penalty mode parameters (OPTIMIZED: 2x stronger)
+  q_penalty:
+    strength: 10.0            # OPTIMIZED: 2x stronger penalty [was 5.0]
+    decay_rate: 0.05          # OPTIMIZED: Slower decay preserves signal [was 0.1]
+    min_penalty: -20.0        # OPTIMIZED: Allow stronger penalties [was -10.0]
+    max_penalty: 0.0          # Maximum penalty value (no penalty)
+
+  # Reward shaping mode parameters (OPTIMIZED: Stronger and more persistent)
+  reward_shaping:
+    strength: 10.0            # OPTIMIZED: 2x stronger [was 5.0]
+    accumulation_rate: 0.7    # OPTIMIZED: Faster accumulation [was 0.5]
+    decay_factor: 0.98        # OPTIMIZED: Slower decay [was 0.95]
+    min_modifier: -10.0       # OPTIMIZED: Allow stronger negative [was -5.0]
+    max_modifier: 10.0        # OPTIMIZED: Allow stronger positive [was 5.0]
+
+  # Exploration parameters during adaptation
+  epsilon_greedy: 0.5         # Exploration rate (NOTE: requires deterministic=False)
+
+  # NEW: Exploration schedule for simulation
+  exploration:
+    enable_during_simulation: true  # Enable exploration during HIL simulation
+    mode: "epsilon_greedy"          # "epsilon_greedy", "boltzmann", or "ucb"
+    deterministic_inference: false  # If true, disables exploration completely
+    epsilon:                        # Epsilon-greedy exploration settings
+      initial: 0.5                  # Starting epsilon (high exploration)
+      final: 0.05                   # Final epsilon (mostly exploitation)
+      decay_schedule: "linear"      # "linear" or "exponential"
+      warmup_iterations: 50         # Iterations before decay starts
+    temperature:                    # Boltzmann (softmax) exploration settings
+      initial: 2.0                  # High temperature = more exploration
+      final: 0.1                    # Low temperature = more greedy
+      decay_schedule: "linear"      # "linear" or "exponential"
+      warmup_iterations: 50         # Iterations before decay starts
+    ucb:                            # UCB exploration settings
+      initial_coef: 2.0             # Starting exploration coefficient
+      final_coef: 0.5               # Final exploration coefficient
+      decay_schedule: "linear"      # "linear" or "exponential"
+      warmup_iterations: 50         # Iterations before decay starts
+  
+  # Ablation study strength values
+  ablation_strengths:
+    - 1.0
+    - 2.5
+    - 5.0
+    - 7.5
+    - 10.0
+    - 15.0
+    - 20.0
+
+# ----------------------------------------------------------------------------
+# SIMULATION PARAMETERS
+# ----------------------------------------------------------------------------
+simulation:
+  # Default simulation settings (OPTIMIZED: More efficient with exploration)
+  num_iterations: 500           # OPTIMIZED: Less needed with exploration [was 1000]
+  num_seeds: 5                  # OPTIMIZED: Statistical validity [was 1]
+  log_interval: 25              # OPTIMIZED: Less verbose [was 10]
+
+  # Batch simulation settings
+  batch_size: 1               # Sequences per iteration (currently single)
+
+  # Random seed range
+  seed_start: 42              # Starting seed value
+
+  # Convergence criteria (OPTIMIZED: More sensitive)
+  convergence:
+    enable: true              # Whether to check for early convergence
+    patience: 25              # OPTIMIZED: More patience with exploration [was 10]
+    min_improvement: 0.02     # OPTIMIZED: More sensitive detection [was 0.05]
+
+# ----------------------------------------------------------------------------
+# SEQUENCE GENERATION PARAMETERS
+# ----------------------------------------------------------------------------
+generation:
+  # Sequence length parameters
+  max_length: 16             # Maximum sequence length
+  min_length: 10              # Minimum sequence length
+  
+  # Generation modes
+  default_mode: "sample"      # "sample", "greedy", or "beam_search"
+  
+  # Temperature for sampling
+  temperature: 1.0            # Sampling temperature (1.0 = standard)
+  
+  # Top-k and top-p sampling
+  top_k: 0                    # Top-k sampling (0 = disabled)
+  top_p: 0.9                  # Nucleus sampling threshold
+
+# ----------------------------------------------------------------------------
+# VISUALIZATION PARAMETERS
+# ----------------------------------------------------------------------------
+visualization:
+  # Figure format
+  default_format: "png"       # "pdf", "png", or "svg"
+  
+  # Figure sizes (width, height in inches)
+  figure_sizes:
+    small: [6, 4]
+    medium: [8, 6]
+    large: [10, 8]
+    wide: [12, 6]
+    square: [8, 8]
+    default: [8, 6]
+  
+  # Font sizes
+  fonts:
+    title: 14
+    label: 14
+    tick: 11
+    legend: 11
+    annotation: 10
+    default: 12
+  
+  # DPI settings
+  dpi:
+    display: 150              # DPI for interactive display
+    save: 300                 # DPI for saved figures
+  
+  # Color palette (hex codes)
+  colors:
+    desirable: "#2ecc71"      # Green for desirable clusters
+    undesirable: "#e74c3c"    # Red for undesirable clusters
+    neutral: "#95a5a6"        # Gray for neutral clusters
+    feedback: "#3498db"       # Blue for feedback curves
+    q_penalty: "#9b59b6"      # Purple for Q-penalty mode
+    reward_shaping: "#f39c12" # Orange for reward shaping mode
+    baseline: "#34495e"       # Dark gray for baseline
+    highlight: "#e67e22"      # Bright orange for highlights
+  
+  # Plot style parameters
+  style:
+    line_width: 2.0
+    marker_size: 6
+    alpha: 0.7                # Transparency for overlays
+    bar_width: 0.8
+    grid_alpha: 0.3
+    error_bar_capsize: 4
+  
+  # Smoothing parameters
+  smoothing:
+    window_size: 5            # Window size for moving average
+    enable: true              # Whether to apply smoothing by default
+  
+  # Layout parameters
+  layout:
+    tight_layout: true
+    bbox_inches: "tight"      # Bounding box for saved figures
+    pad_inches: 0.1
+
+# ----------------------------------------------------------------------------
+# ANALYSIS PARAMETERS
+# ----------------------------------------------------------------------------
+analysis:
+  # Sequence analysis settings
+  sequence:
+    top_n_clusters: 20        # Number of top clusters to display in distribution
+    transition_matrix_size: 15 # Max clusters to show in transition heatmap
+    example_sequences: 5      # Number of example sequences to visualize
+    total_clusters: 22        # Total number of clusters in GHSOM model
+  
+  # Diversity metrics
+  diversity:
+    entropy_base: "natural"   # "natural" (ln) or "binary" (log2)
+    min_unique_threshold: 5   # Minimum unique clusters for diversity
+  
+  # Statistical analysis
+  statistical:
+    confidence_level: 0.95    # Confidence level for intervals
+    significance_level: 0.05  # Significance level for tests
+    min_samples: 3            # Minimum samples for statistical tests
+  
+  # Cluster profile analysis
+  profile:
+    min_cluster_count: 3      # Minimum appearances to include in analysis
+    arousal_levels:
+      - "low"
+      - "medium"
+      - "high"
+    preference_types:
+      - "intrinsic"
+      - "extrinsic"
+
+# ----------------------------------------------------------------------------
+# CLI DEFAULTS
+# ----------------------------------------------------------------------------
+cli:
+  # Default config file location
+  agent_config: "configs/agent_config.yaml"
+  
+  # Generate command defaults
+  generate:
+    num_episodes: 10
+    max_steps: 100
+    output_format: "json"
+  
+  # Simulate command defaults
+  simulate:
+    scenario: "calm_relaxation"
+    mode: "single"            # "single", "all", "ablation", "comparison"
+  
+  # Visualize command defaults
+  visualize:
+    include_paper_figures: true
+    formats:
+      - "png"
+  
+  # Benchmark command defaults
+  benchmark:
+    num_sequences: 100
+    include_baselines: true
+
+# ----------------------------------------------------------------------------
+# POLICY LEARNING PARAMETERS (OPTIMIZED: Enable persistent learning)
+# ----------------------------------------------------------------------------
+policy_learning:
+  # Whether to enable gradient-based policy updates during HIL simulation
+  enable: true                  # OPTIMIZED: ENABLED for persistent learning [was false]
+
+  # Learning rate for policy updates (OPTIMIZED: 5x faster)
+  learning_rate: 0.0005         # OPTIMIZED: Faster learning [was 0.0001]
+
+  # Update frequency: perform gradient update every N preference feedback steps
+  update_frequency: 5           # OPTIMIZED: 2x more frequent [was 10]
+
+  # Minimum experiences in buffer before training starts
+  min_buffer_size: 16           # OPTIMIZED: Start learning earlier [was 32]
+
+  # Batch size for gradient updates
+  batch_size: 32                # OPTIMIZED: Larger batches for stability [was 16]
+
+  # Discount factor for future rewards
+  gamma: 0.95
+
+  # Gradient clipping to prevent large updates
+  gradient_clip: 0.5            # OPTIMIZED: Tighter clipping for stability [was 1.0]
+
+  # Experience buffer size
+  buffer_size: 2000             # OPTIMIZED: Larger buffer [was 1000]
+
+  # Reward shaping parameters (OPTIMIZED: Stronger preference signal)
+  reward_alpha: 0.2             # OPTIMIZED: 2x stronger signal [was 0.1]
+  cluster_bonus: 0.1            # OPTIMIZED: 2x stronger bonus [was 0.05]
+
+# ----------------------------------------------------------------------------
+# CHECKPOINT SAVING PARAMETERS (OPTIMIZED: Enable checkpoint persistence)
+# ----------------------------------------------------------------------------
+checkpoint:
+  # Whether to save adapted checkpoint after HIL simulation
+  save_after_simulation: true   # OPTIMIZED: ENABLED for persistence [was false]
+  
+  # Output directory for adapted checkpoints (relative to simulation output)
+  output_subdir: "adapted_checkpoints"
+  
+  # Filename pattern for adapted checkpoints
+  filename_pattern: "adapted_{scenario}_{timestamp}.pth"
+
+# ----------------------------------------------------------------------------
+# EXPERIMENTAL FEATURES
+# ----------------------------------------------------------------------------
+experimental:
+  # Multi-objective optimization
+  multi_objective:
+    enable: false
+    objectives:
+      - "desirable_ratio"
+      - "diversity"
+    weights: [0.7, 0.3]
+  
+  # Adaptive threshold adjustment (OPTIMIZED: ENABLED)
+  adaptive_threshold:
+    enable: true                # OPTIMIZED: ENABLED for dynamic adjustment [was false]
+    adjustment_rate: 0.03       # OPTIMIZED: Slower adjustment [was 0.05]
+    min_threshold: 2.5          # OPTIMIZED: Higher minimum [was 2.0]
+    max_threshold: 3.5          # OPTIMIZED: Tighter range [was 4.0]
+    no_improvement_patience: 100  # NEW: Iterations before adjustment
+  
+  # Interactive feedback collection
+  interactive_mode:
+    enable: false
+    timeout: 30
+    default_feedback: 3.0
+
+  # Learning verification settings
+  learning_verification:
+    enable: true                    # Enable post-simulation learning verification
+    diversity_threshold: 0.02       # Minimum diversity ratio for detection
+    improvement_threshold: 0.05     # Minimum metric improvement for detection
+    trend_significance: 0.05        # P-value threshold for trend significance
+
+# ----------------------------------------------------------------------------
+# LOGGING AND DEBUGGING
+# ----------------------------------------------------------------------------
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Save logs to file
+  save_logs: true
+  log_dir: "logs/inference"
+  
+  # Verbose output
+  verbose: false
+  
+  # Progress tracking
+  show_progress: true
+  
+  # Debug flags
+  debug:
+    save_intermediates: false  # Save intermediate results
+    profile_performance: false # Enable performance profiling
+    validate_inputs: true      # Enable input validation
+
+# ============================================================================
+# END OF INFERENCE CONFIGURATION
+# ============================================================================

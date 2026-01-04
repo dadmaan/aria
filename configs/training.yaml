@@ -1,0 +1,383 @@
+# =============================================================================
+# Training Configuration
+# =============================================================================
+# Priority: CLI arguments > Config file > Defaults
+
+
+# =============================================================================
+# ALGORITHM CONFIGURATION
+# =============================================================================
+# Select the RL algorithm and its specific parameters.
+# Tianshou supports: DQN, Dueling DQN, C51, Rainbow DQN
+
+algorithm:
+  # Algorithm type selection
+  # Options: "dqn", "dueling_dqn", "c51", "rainbow"
+  type: "dqn"
+  
+  # Double DQN: Use target network for action selection
+  # Reduces overestimation bias in Q-value estimation
+  # Applies to: dqn, dueling_dqn
+  is_double: true
+  
+  # Distributional RL parameters (C51 and Rainbow)
+  distributional:
+    num_atoms: 51           # Number of atoms in categorical distribution
+    v_min: -3.0             # Minimum value of support
+    v_max: 7.0              # Maximum value of support
+  
+  # Prioritized Experience Replay (PER)
+  # Samples transitions based on TD-error magnitude
+  prioritized_replay:
+    enabled: false          # Enable PER (recommended for Rainbow)
+    alpha: 0.6              # Priority exponent (0 = uniform, 1 = full prioritization)
+    beta: 0.4               # Initial importance sampling weight
+    beta_final: 1.0         # Final beta value (annealed linearly)
+    beta_anneal_step: null  # Steps for beta annealing (null = total_timesteps)
+
+# ========================================
+# Network Configuration
+# ========================================
+network:
+  # Network type: "drqn" (LSTM) or "mlp" (feedforward)
+  # - drqn: Preserves temporal context across steps (recommended)
+  # - mlp: No temporal memory, baseline for comparison
+  # - dueling_drqn: Dueling architecture with value/advantage streams
+  # - c51_drqn: Categorical distributional RL (C51)
+  # - rainbow_drqn: Full Rainbow (Dueling + C51 + NoisyNet)
+  type: "drqn"
+  
+  # Shared network parameters (both DRQN and MLP)
+  embedding_dim: 64           # Embedding layer output dimension
+  fc_hidden_sizes: [128, 64]  # Fully-connected layers after LSTM/embedding
+  activation_fn: "elu"        # Options: relu, tanh, elu, leakyrelu, gelu, sigmoid
+  dropout: 0.2                # Dropout rate (0.0 = no dropout)
+  
+  # DRQN-specific parameters (ignored if type="mlp")
+  lstm:
+    hidden_size: 256          # LSTM hidden state dimension
+    num_layers: 1             # Number of stacked LSTM layers
+
+  # NoisyNet configuration (learned exploration)
+  # Replaces ε-greedy with parametric noise on network weights
+  # Supported by: drqn, dueling_drqn, c51_drqn, rainbow_drqn
+  noisy_net:
+    enabled: false            # Enable NoisyLinear layers for exploration
+    sigma_init: 0.5           # Initial noise scale (Rainbow paper default: 0.5)
+
+# =============================================================================
+# REPLAY BUFFER CONFIGURATION
+# =============================================================================
+replay_buffer:
+  # Buffer stacking (for frame stacking in Atari-like envs)
+  # Set to 1 for single-frame observations
+  stack_num: 1
+  
+  # Sequence-based sampling for recurrent networks (R2D2-style)
+  sequence:
+    enabled: true             # Enable sequence-based sampling
+    sequence_length: 16       # Length of sampled sequences
+    min_sequence_length: 4    # Minimum valid sequence length
+    store_hidden_states: true # Store LSTM hidden states per transition
+    respect_episode_boundaries: true  # Don't sample across episode boundaries
+  
+  # Burn-in mechanism (R2D2-style)
+  # Re-initializes LSTM hidden state using burn-in portion of sequence
+  burn_in:
+    enabled: true             # Enable burn-in mechanism
+    burn_in_length: 8         # Number of burn-in steps (should be < sequence_length)
+    use_stored_hidden: true   # Use stored hidden state as burn-in starting point
+
+# =============================================================================
+# TRAINING CONFIGURATION
+# =============================================================================
+training:
+  # Total training budget
+  total_timesteps: 200_000    # Total environment steps (num_iterations equivalent)
+  
+  # Tianshou trainer parameters
+  step_per_epoch: 1000        # Steps between logging/evaluation
+  step_per_collect: 1         # Environment steps per collection (collect_steps_per_iteration)
+  episode_per_test: 10        # Episodes for evaluation (num_eval_episodes)
+  batch_size: 32              # Training batch size
+  
+  # Replay buffer
+  buffer_size: 100_000        # Maximum replay buffer size (replay_buffer_max_length)
+  
+  # Optimization
+  learning_rate: 0.001        # Adam optimizer learning rate
+  gamma: 0.95                 # Discount factor
+  target_update_freq: 1000    # Target network update frequency (steps)
+  
+  # Multi-step returns (n-step TD target)
+  # Rainbow paper recommends n=3, used for improved credit propagation
+  n_step: 3
+  
+  # Console logging frequency (steps)
+  log_interval: 100
+  
+  # Exploration (epsilon-greedy)
+  exploration:
+    initial_eps: 1.0          # Starting exploration rate
+    final_eps: 0.05           # Final exploration rate
+    fraction: 0.5             # Fraction of training for exploration decay
+
+  # Learning rate scheduling (callback-based)
+  learning_rate_scheduler:
+    enabled: true             # Enable/disable LR scheduling
+    type: "exponential"       # "linear" or "exponential"
+    initial_lr: 0.001         # Starting learning rate
+    final_lr: 0.0001          # Final learning rate
+    decay_rate: 0.995         # Decay rate for exponential (per-step multiplier)
+    decay_steps: 5000         # Steps for full decay (initial_lr -> final_lr)
+
+    # Pulse mechanism: Time-limited intervention on performance stagnation
+    pulse_mechanism:
+      enabled: true           # Enable pulse mechanism
+      duration_episodes: 50   # Pulse duration in episodes
+      boost_epsilon: 0.3      # Optional exploration boost (null to disable)
+      trigger_mode: "adaptive"  # "static" or "adaptive"
+
+      # Static trigger (used when trigger_mode = "static")
+      trigger_threshold: 8.0  # Trigger pulse if avg reward < threshold
+
+      # Adaptive trigger (used when trigger_mode = "adaptive")
+      adaptive_threshold:
+        enabled: true         # Enable adaptive threshold
+        baseline_alpha: 0.1   # EMA smoothing factor (lower = slower adaptation)
+        relative_drop_threshold: 0.15  # Trigger if avg reward drops 15% below baseline
+
+  # Pre-training random collection
+  start_timesteps: 1000       # Random steps before training (initial_collect_steps)
+
+# =============================================================================
+# MUSIC GENERATION SETTINGS
+# =============================================================================
+music:
+  # Length of generated musical sequences (notes)
+  sequence_length: 16
+
+# =============================================================================
+# ENVIRONMENT CONFIGURATION (Observation Encoding Strategy)
+# =============================================================================
+# Choose between:
+#   1. Normalized cluster IDs: Simple normalization of cluster IDs to [0, 1]
+#   2. Feature vectors: Rich GHSOM cluster features (t-SNE or raw features)
+
+# IMPORTANT: Only used if use_feature_observations=false
+use_normalized_observations: false
+
+# Use fixed feature vectors from GHSOM prototypes/centroids
+use_feature_observations: true
+
+# Feature observation mode (only used if use_feature_observations=true)
+# Options: "prototype" | "centroid"
+feature_observation_mode: "prototype"
+
+# Feature observation source (only used if use_feature_observations=true)
+# Options: "tsne" | "raw"
+feature_observation_source: "tsne"
+
+# =============================================================================
+# GHSOM CONFIGURATION
+# =============================================================================
+ghsom:
+  # Path to GHSOM checkpoint directory (null to use default or CLI override)
+  checkpoint: null
+
+  # Default GHSOM model path (used when checkpoint is null)
+  default_model_path: "artifacts/ghsom_commu_tsne/ghsom_model.pkl"
+
+# =============================================================================
+# CLUSTER PROFILES CONFIGURATION
+# =============================================================================
+cluster_profiles:
+  # Default path to cluster profiles CSV
+  default_path: "artifacts/ghsom_commu_tsne/cluster_profiles.csv"
+
+# =============================================================================
+# CURRICULUM LEARNING CONFIGURATION
+# =============================================================================
+# Dynamic Coarse-to-Fine Hierarchical Curriculum Learning
+# Automatically extracts hierarchy from GHSOM and progressively expands action space
+curriculum:
+  enabled: true # Enable/disable curriculum learning
+
+  # GHSOM experiment path for hierarchy extraction
+  # If null, uses ghsom.default_model_path
+  ghsom_experiment_path: null
+
+  # Phase duration parameters (scaled by action space size)
+  timesteps_per_action: 2500    # Minimum timesteps = actions * timesteps_per_action
+  patience_per_action: 150      # Plateau patience = actions * patience_per_action
+
+  # Plateau detection threshold
+  plateau_threshold: 0.01
+
+  # Phase transition behavior
+  transition:
+    flush_buffer: true # Flush replay buffer on phase transition (recommended)
+    epsilon_boost: 0.3 # Epsilon boost on phase entry (null to disable)
+    add_mitosis_noise: true # Add noise to differentiate sibling actions during weight mitosis
+    mitosis_noise_scale: 0.01
+
+# =============================================================================
+# FEATURE CONFIGURATION
+# =============================================================================
+features:
+  # Path to feature artifact directory
+  artifact_path: "artifacts/features/tsne/commu_full_filtered_tsne"
+  
+  # Feature type: raw | tsne | filtered
+  type: "tsne"
+
+# =============================================================================
+# REWARD SYSTEM (Orthogonal Components, Euclidean-Only)
+# =============================================================================
+# Enable incremental (step-by-step) rewards
+use_incremental_rewards: true
+
+# Context window for structure calculation (past steps to consider)
+reward_context_window: 5
+
+# Component-specific configuration (weights should sum to ~1.0)
+reward_components:
+  # Structure: GHSOM-based quality using Euclidean distance
+  structure:
+    weight: 0.35 # from best performer `configs/20251207_abelations/baseline.yaml`
+    enabled: true
+  
+  # Transition: Smoothness between consecutive clusters
+  transition:
+    weight: 0.30 # from best performer `configs/20251207_abelations/baseline.yaml`
+    enabled: true
+    structural_weight: 0.3
+    max_distance: 60.0
+  
+  # Diversity: Controlled variety with diminishing returns
+  diversity:
+    weight: 0.35 # from best performer `configs/20251207_abelations/baseline.yaml`
+    enabled: true
+    optimal_ratio_low: 0.62
+    optimal_ratio_high: 0.75
+    repetition_penalty: -0.3
+
+# Feature weights for structure sub-component
+feature_weights:
+  distance_weight: 1.0
+  neighbor_weight: 0.5
+  grid_weight: 0.25
+
+# =============================================================================
+# INTERACTION & HUMAN FEEDBACK
+# =============================================================================
+interaction_timeout: 30
+non_interactive_mode: true
+human_feedback_enabled: false
+human_feedback_timeout: 5
+cli_human_feedback: null
+render_midi: false
+print_episode_output: false
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+logging:
+  # Weights & Biases
+  wandb:
+    enabled: true
+    project: "ARIA_rl_V04"
+    entity: null
+    tags: []
+    log_interval: 10
+    save_code: true
+  
+  # TensorBoard
+  tensorboard:
+    enabled: true
+    log_dir: "logs"
+    log_interval: 10
+    log_histograms: false
+    histogram_interval: 100
+
+  # Comprehensive Metrics (system, Q-values, gradients, GHSOM patterns)
+  # Logs to WandB, TensorBoard, and local JSON files
+  comprehensive:
+    enabled: true                 # Enable/disable comprehensive metrics callback
+    log_system_metrics: true      # CPU, GPU, memory usage
+    log_model_info: true          # Model architecture info at start
+    log_ghsom_metrics: true       # GHSOM cluster/neuron visit patterns
+    log_training_metrics: true    # Loss, Q-values, gradients
+    log_to_tensorboard: true      # Also write to TensorBoard
+    log_to_local: true            # Also write to local JSON files
+    system_metrics_freq: 10       # Steps between system metrics logging
+    q_value_log_freq: 10          # Steps between Q-value statistics logging
+    gradient_log_freq: 10         # Steps between gradient norm logging
+
+  # Reward Components (individual structure, transition, diversity tracking)
+  # Provides detailed breakdown of reward signals for analysis
+  reward_components:
+    enabled: true                 # Enable/disable reward components callback
+    log_frequency: 10             # Steps between statistics logging
+    export_frequency: 1000        # Steps between local JSON export
+    log_to_wandb: true            # Log component stats to WandB
+    log_to_tensorboard: true      # Log component stats to TensorBoard
+    log_to_local: true            # Export history to local JSON files
+    max_history: 10000             # Maximum episodes to keep in history
+
+# =============================================================================
+# PATHS & OUTPUT
+# =============================================================================
+paths:
+  output_dir: "artifacts/training"
+  tensorboard_log_dir: "logs"
+  checkpoint_dir: null
+
+# =============================================================================
+# EVALUATION CONFIGURATION
+# =============================================================================
+evaluation:
+  enabled: true
+  interval: 100
+  num_episodes: 10
+  deterministic: true
+
+# =============================================================================
+# TERMINAL UI
+# =============================================================================
+enable_terminal_ui: true
+terminal_ui:
+  mode: "simple"
+  refresh_rate: 4
+  show_sparklines: true
+  show_sequence_visual: true
+  show_ghsom_hierarchy: true
+  max_history_length: 100
+
+# =============================================================================
+# SYSTEM CONFIGURATION
+# =============================================================================
+system:
+  device: "auto"
+  enable_gpu: true
+  seed: 42
+  verbose: 1
+
+# =============================================================================
+# TRAINING METRICS MONITORING
+# =============================================================================
+monitoring:
+  log_training_metrics: true
+  q_value_log_freq: 100
+  gradient_log_freq: 100
+
+# =============================================================================
+# DEBUG SETTINGS
+# =============================================================================
+debug:
+  summarize_grads_and_vars: false
+  debug_summaries: false
+
+# =============================================================================
+# EOF
+# =============================================================================

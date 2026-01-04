@@ -1,0 +1,24 @@
+{
+  "total_clusters": 22,
+  "total_samples": 11143,
+  "analysis_timestamp": "2025-12-14T14:43:22.806627",
+  "function_distribution": {
+    "Atmospheric Creation": 3,
+    "Harmonic Foundation": 6,
+    "Narrative Support": 3,
+    "Direct Address": 8,
+    "Motoric Drive": 2
+  },
+  "preference_distribution": {
+    "extrinsic": 20,
+    "intrinsic": 2
+  },
+  "arousal_distribution": {
+    "medium": 14,
+    "low": 7,
+    "high": 1
+  },
+  "mean_silhouette": 0.18224485227016754,
+  "davies_bouldin_index": 1.3912794779149011,
+  "calinski_harabasz_index": 2766.7490191140664
+}

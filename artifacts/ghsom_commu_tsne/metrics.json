@@ -1,0 +1,11 @@
+{
+  "avg_child_map_weights": 2.0,
+  "dispersion_rate": 1.2727272727272727,
+  "ghsom_depth": 3.0,
+  "max_neurons_child_map": 4.0,
+  "mean_activation": 14.32508373260498,
+  "num_clusters": 22.0,
+  "num_maps": 7.0,
+  "num_neurons": 28.0,
+  "std_activation": 7.8210062980651855
+}

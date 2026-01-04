@@ -1,0 +1,45 @@
+{
+  "num_iterations": 1000,
+  "initial_collect_steps": 1000,
+  "collect_steps_per_iteration": 1,
+  "replay_buffer_max_length": 1000000,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "gamma": 0.1,
+  "num_eval_episodes": 10,
+  "eval_interval": 100,
+  "lstm_q_net": true,
+  "fc_q_net": false,
+  "input_fc_layer_params": [
+    64
+  ],
+  "lstm_layer_params": [
+    64
+  ],
+  "output_fc_layer_params": [
+    64
+  ],
+  "activation_fn": "elu",
+  "embedding_params": null,
+  "wandb_project_name": "dqn_ghsom_test",
+  "tensorboard_log_dir": "logs",
+  "checkpoint_dir": null,
+  "summarize_grads_and_vars": false,
+  "debug_summaries": false,
+  "render_midi": false,
+  "print_episode_output": false,
+  "human_feedback_enabled": false,
+  "human_feedback_timeout": 5,
+  "rl_backend": "sb3",
+  "reward_weights": {
+    "w1": 0.5714285714285715,
+    "w2": 0.4285714285714286,
+    "w3": 0.0
+  },
+  "similarity_mode": "cosine",
+  "interaction_timeout": 30,
+  "non_interactive_mode": true,
+  "enable_wandb": false,
+  "enable_gpu": false,
+  "seed": 1
+}

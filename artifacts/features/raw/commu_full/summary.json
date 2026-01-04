@@ -1,0 +1,9 @@
+{
+  "run_id": "commu_full",
+  "processed_files": 11144,
+  "success_count": 11143,
+  "failure_count": 1,
+  "index_path": "/workspace/artifacts/features/raw/commu_full/index.json",
+  "feature_matrix_path": "/workspace/artifacts/features/raw/commu_full/features_numeric.csv",
+  "metadata_join_path": "/workspace/artifacts/features/raw/commu_full/features_with_metadata.csv"
+}

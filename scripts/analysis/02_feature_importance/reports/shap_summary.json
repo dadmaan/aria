@@ -1,0 +1,654 @@
+{
+  "data_info": {
+    "total_samples": 532,
+    "train_samples": 425,
+    "test_samples": 107,
+    "num_features": 31,
+    "target_variable": "pm_energy",
+    "features_removed": [
+      "muspy_drum_in_pattern_rate_triple",
+      "muspy_drum_in_pattern_rate_duple",
+      "muspy_drum_pattern_consistency"
+    ],
+    "features_excluded": [
+      "track_id",
+      "metadata_index"
+    ],
+    "final_features": [
+      "pm_note_count",
+      "pm_length_seconds",
+      "pm_pitch_range_min_freq",
+      "pm_pitch_range_min_note",
+      "pm_pitch_range_max_freq",
+      "pm_pitch_range_max_note",
+      "pm_average_pitch_hz",
+      "pm_average_velocity",
+      "pm_interval_range_min",
+      "pm_interval_range_max",
+      "pm_groove",
+      "pm_max_polyphony",
+      "pm_average_polyphony",
+      "pm_instrument_count",
+      "pm_note_density",
+      "pm_bar_count",
+      "pm_tempo_bpm",
+      "muspy_pitch_range",
+      "muspy_n_pitches_used",
+      "muspy_n_pitch_classes_used",
+      "muspy_polyphony",
+      "muspy_scale_consistency",
+      "muspy_pitch_entropy",
+      "muspy_pitch_class_entropy",
+      "muspy_empty_beat_rate",
+      "muspy_groove_consistency",
+      "muspy_empty_measure_rate",
+      "theory_centricity",
+      "theory_limited_macroharmony",
+      "theory_conjuction_melody_motion",
+      "theory_general_tonality"
+    ]
+  },
+  "model_comparison": {
+    "RandomForest": {
+      "cv_rmse_mean": 30.08398406912921,
+      "cv_rmse_std": 29.944017244430523,
+      "train_rmse": 35.49790787075748,
+      "test_rmse": 10.092661040644288,
+      "train_r2": 0.6205680994696967,
+      "test_r2": 0.6777267134049421,
+      "train_mae": 5.040073194947571,
+      "test_mae": 3.2152282121086246
+    },
+    "GradientBoosting": {
+      "cv_rmse_mean": 27.126289274243465,
+      "cv_rmse_std": 26.90805325779809,
+      "train_rmse": 0.4450357047507305,
+      "test_rmse": 20.558534306037664,
+      "train_r2": 0.9999403626913587,
+      "test_r2": -0.3372026555009169,
+      "train_mae": 0.3232501716025077,
+      "test_mae": 3.3385918894279865
+    },
+    "Ridge": {
+      "cv_rmse_mean": 16.917215120093243,
+      "cv_rmse_std": 7.39097268136738,
+      "train_rmse": 11.520076018243618,
+      "test_rmse": 9.041031664980808,
+      "train_r2": 0.9600387545568395,
+      "test_r2": 0.7413878570316597,
+      "train_mae": 7.24937091483919,
+      "test_mae": 7.158057562316891
+    },
+    "Lasso": {
+      "cv_rmse_mean": 18.662286063131386,
+      "cv_rmse_std": 10.428934259252681,
+      "train_rmse": 13.552768295948123,
+      "test_rmse": 9.318398122904629,
+      "train_r2": 0.9446924587007183,
+      "test_r2": 0.7252767248223664,
+      "train_mae": 6.981846056866783,
+      "test_mae": 6.196770499159317
+    }
+  },
+  "best_model": {
+    "name": "Ridge",
+    "test_r2": 0.7413878570316597,
+    "test_rmse": 9.041031664980808,
+    "test_mae": 7.158057562316891
+  },
+  "shap_info": {
+    "explainer_type": "LinearExplainer",
+    "expected_value": 18.376500517017014,
+    "shap_values_shape": [
+      107,
+      31
+    ],
+    "test_samples": 107,
+    "num_features": 31
+  },
+  "global_importance": {
+    "top_15_features": [
+      {
+        "feature": "pm_note_count",
+        "mean_abs_shap": 22.063909804835504,
+        "mean_shap": -10.13179679071593,
+        "std_shap": 26.212519706946452,
+        "max_abs_shap": 127.45883739286721,
+        "rank": 1
+      },
+      {
+        "feature": "pm_average_polyphony",
+        "mean_abs_shap": 8.9190618098115,
+        "mean_shap": 3.226643295879143,
+        "std_shap": 12.386787877602508,
+        "max_abs_shap": 30.60282601051696,
+        "rank": 2
+      },
+      {
+        "feature": "muspy_n_pitches_used",
+        "mean_abs_shap": 7.920439787056748,
+        "mean_shap": -1.179486791497771,
+        "std_shap": 11.35651536997774,
+        "max_abs_shap": 44.80729934374491,
+        "rank": 3
+      },
+      {
+        "feature": "muspy_n_pitch_classes_used",
+        "mean_abs_shap": 7.593135269287996,
+        "mean_shap": -0.6780509340672984,
+        "std_shap": 9.371293790500443,
+        "max_abs_shap": 22.232232753109567,
+        "rank": 4
+      },
+      {
+        "feature": "muspy_polyphony",
+        "mean_abs_shap": 7.518215425805735,
+        "mean_shap": -0.7918625209584575,
+        "std_shap": 9.450396842461478,
+        "max_abs_shap": 18.842569863854454,
+        "rank": 5
+      },
+      {
+        "feature": "muspy_pitch_entropy",
+        "mean_abs_shap": 5.313279633801753,
+        "mean_shap": 0.3174197275542607,
+        "std_shap": 6.886232746168683,
+        "max_abs_shap": 14.460231599674179,
+        "rank": 6
+      },
+      {
+        "feature": "theory_conjuction_melody_motion",
+        "mean_abs_shap": 5.1867778487042235,
+        "mean_shap": -0.9297024442295772,
+        "std_shap": 8.030667461946855,
+        "max_abs_shap": 20.73710097638893,
+        "rank": 7
+      },
+      {
+        "feature": "pm_average_velocity",
+        "mean_abs_shap": 4.144795348860574,
+        "mean_shap": 0.72287079724398,
+        "std_shap": 4.838763666355337,
+        "max_abs_shap": 9.556478979710034,
+        "rank": 8
+      },
+      {
+        "feature": "muspy_pitch_class_entropy",
+        "mean_abs_shap": 3.785996754956161,
+        "mean_shap": 0.0003761520936862647,
+        "std_shap": 4.802955406340821,
+        "max_abs_shap": 9.337969968134109,
+        "rank": 9
+      },
+      {
+        "feature": "pm_groove",
+        "mean_abs_shap": 3.720227399650621,
+        "mean_shap": 0.7457889649287435,
+        "std_shap": 5.470177350893165,
+        "max_abs_shap": 29.86250634374217,
+        "rank": 10
+      },
+      {
+        "feature": "theory_centricity",
+        "mean_abs_shap": 3.636532961951976,
+        "mean_shap": 2.4156726984477492,
+        "std_shap": 4.42021189145756,
+        "max_abs_shap": 30.929327383301228,
+        "rank": 11
+      },
+      {
+        "feature": "muspy_empty_measure_rate",
+        "mean_abs_shap": 3.5411234610696094,
+        "mean_shap": -0.5980957642709235,
+        "std_shap": 4.240023905089193,
+        "max_abs_shap": 13.353539821517856,
+        "rank": 12
+      },
+      {
+        "feature": "muspy_empty_beat_rate",
+        "mean_abs_shap": 3.54112346106945,
+        "mean_shap": -0.5980957642708962,
+        "std_shap": 4.240023905089001,
+        "max_abs_shap": 13.353539821517254,
+        "rank": 13
+      },
+      {
+        "feature": "pm_note_density",
+        "mean_abs_shap": 3.0742234902932557,
+        "mean_shap": -1.370316128449381,
+        "std_shap": 4.858338879034881,
+        "max_abs_shap": 41.19379512553024,
+        "rank": 14
+      },
+      {
+        "feature": "theory_general_tonality",
+        "mean_abs_shap": 2.3498871299660897,
+        "mean_shap": 0.43701345257311724,
+        "std_shap": 3.720946630496154,
+        "max_abs_shap": 9.642336630672423,
+        "rank": 15
+      }
+    ],
+    "all_features": [
+      {
+        "feature": "pm_note_count",
+        "mean_abs_shap": 22.063909804835504,
+        "mean_shap": -10.13179679071593,
+        "std_shap": 26.212519706946452,
+        "max_abs_shap": 127.45883739286721,
+        "rank": 1
+      },
+      {
+        "feature": "pm_average_polyphony",
+        "mean_abs_shap": 8.9190618098115,
+        "mean_shap": 3.226643295879143,
+        "std_shap": 12.386787877602508,
+        "max_abs_shap": 30.60282601051696,
+        "rank": 2
+      },
+      {
+        "feature": "muspy_n_pitches_used",
+        "mean_abs_shap": 7.920439787056748,
+        "mean_shap": -1.179486791497771,
+        "std_shap": 11.35651536997774,
+        "max_abs_shap": 44.80729934374491,
+        "rank": 3
+      },
+      {
+        "feature": "muspy_n_pitch_classes_used",
+        "mean_abs_shap": 7.593135269287996,
+        "mean_shap": -0.6780509340672984,
+        "std_shap": 9.371293790500443,
+        "max_abs_shap": 22.232232753109567,
+        "rank": 4
+      },
+      {
+        "feature": "muspy_polyphony",
+        "mean_abs_shap": 7.518215425805735,
+        "mean_shap": -0.7918625209584575,
+        "std_shap": 9.450396842461478,
+        "max_abs_shap": 18.842569863854454,
+        "rank": 5
+      },
+      {
+        "feature": "muspy_pitch_entropy",
+        "mean_abs_shap": 5.313279633801753,
+        "mean_shap": 0.3174197275542607,
+        "std_shap": 6.886232746168683,
+        "max_abs_shap": 14.460231599674179,
+        "rank": 6
+      },
+      {
+        "feature": "theory_conjuction_melody_motion",
+        "mean_abs_shap": 5.1867778487042235,
+        "mean_shap": -0.9297024442295772,
+        "std_shap": 8.030667461946855,
+        "max_abs_shap": 20.73710097638893,
+        "rank": 7
+      },
+      {
+        "feature": "pm_average_velocity",
+        "mean_abs_shap": 4.144795348860574,
+        "mean_shap": 0.72287079724398,
+        "std_shap": 4.838763666355337,
+        "max_abs_shap": 9.556478979710034,
+        "rank": 8
+      },
+      {
+        "feature": "muspy_pitch_class_entropy",
+        "mean_abs_shap": 3.785996754956161,
+        "mean_shap": 0.0003761520936862647,
+        "std_shap": 4.802955406340821,
+        "max_abs_shap": 9.337969968134109,
+        "rank": 9
+      },
+      {
+        "feature": "pm_groove",
+        "mean_abs_shap": 3.720227399650621,
+        "mean_shap": 0.7457889649287435,
+        "std_shap": 5.470177350893165,
+        "max_abs_shap": 29.86250634374217,
+        "rank": 10
+      },
+      {
+        "feature": "theory_centricity",
+        "mean_abs_shap": 3.636532961951976,
+        "mean_shap": 2.4156726984477492,
+        "std_shap": 4.42021189145756,
+        "max_abs_shap": 30.929327383301228,
+        "rank": 11
+      },
+      {
+        "feature": "muspy_empty_measure_rate",
+        "mean_abs_shap": 3.5411234610696094,
+        "mean_shap": -0.5980957642709235,
+        "std_shap": 4.240023905089193,
+        "max_abs_shap": 13.353539821517856,
+        "rank": 12
+      },
+      {
+        "feature": "muspy_empty_beat_rate",
+        "mean_abs_shap": 3.54112346106945,
+        "mean_shap": -0.5980957642708962,
+        "std_shap": 4.240023905089001,
+        "max_abs_shap": 13.353539821517254,
+        "rank": 13
+      },
+      {
+        "feature": "pm_note_density",
+        "mean_abs_shap": 3.0742234902932557,
+        "mean_shap": -1.370316128449381,
+        "std_shap": 4.858338879034881,
+        "max_abs_shap": 41.19379512553024,
+        "rank": 14
+      },
+      {
+        "feature": "theory_general_tonality",
+        "mean_abs_shap": 2.3498871299660897,
+        "mean_shap": 0.43701345257311724,
+        "std_shap": 3.720946630496154,
+        "max_abs_shap": 9.642336630672423,
+        "rank": 15
+      },
+      {
+        "feature": "pm_pitch_range_max_freq",
+        "mean_abs_shap": 1.921768293441522,
+        "mean_shap": -0.018571136754605862,
+        "std_shap": 2.7332113923266053,
+        "max_abs_shap": 16.325671423335663,
+        "rank": 16
+      },
+      {
+        "feature": "pm_bar_count",
+        "mean_abs_shap": 1.7916035919663509,
+        "mean_shap": 0.7047502031174853,
+        "std_shap": 2.508016035652711,
+        "max_abs_shap": 5.84482319473688,
+        "rank": 17
+      },
+      {
+        "feature": "pm_length_seconds",
+        "mean_abs_shap": 1.6183410991140084,
+        "mean_shap": 0.07171273279934991,
+        "std_shap": 1.9847790638669287,
+        "max_abs_shap": 5.184297491614344,
+        "rank": 18
+      },
+      {
+        "feature": "pm_interval_range_min",
+        "mean_abs_shap": 1.4568407986604597,
+        "mean_shap": -0.3681444256885453,
+        "std_shap": 2.009596806221926,
+        "max_abs_shap": 6.25808349881329,
+        "rank": 19
+      },
+      {
+        "feature": "pm_pitch_range_max_note",
+        "mean_abs_shap": 1.0940930447922756,
+        "mean_shap": -0.06087540791402874,
+        "std_shap": 1.3927418731370977,
+        "max_abs_shap": 4.425935775343606,
+        "rank": 20
+      },
+      {
+        "feature": "pm_interval_range_max",
+        "mean_abs_shap": 1.0861972713684551,
+        "mean_shap": -0.23113648635154926,
+        "std_shap": 1.3124002619776292,
+        "max_abs_shap": 2.581177052347875,
+        "rank": 21
+      },
+      {
+        "feature": "muspy_pitch_range",
+        "mean_abs_shap": 1.0421964160256267,
+        "mean_shap": -0.15457040130238517,
+        "std_shap": 1.4239668241007435,
+        "max_abs_shap": 3.83724993306626,
+        "rank": 22
+      },
+      {
+        "feature": "pm_max_polyphony",
+        "mean_abs_shap": 0.7021714423264309,
+        "mean_shap": 0.01324851777974412,
+        "std_shap": 0.8985581936952579,
+        "max_abs_shap": 4.252774207297818,
+        "rank": 23
+      },
+      {
+        "feature": "muspy_scale_consistency",
+        "mean_abs_shap": 0.636870268528628,
+        "mean_shap": -0.06099971759525277,
+        "std_shap": 0.8225111222622086,
+        "max_abs_shap": 2.7050267845397737,
+        "rank": 24
+      },
+      {
+        "feature": "theory_limited_macroharmony",
+        "mean_abs_shap": 0.5017194006618808,
+        "mean_shap": -0.046420281529724314,
+        "std_shap": 0.6206906077642776,
+        "max_abs_shap": 1.4807895980369115,
+        "rank": 25
+      },
+      {
+        "feature": "pm_pitch_range_min_note",
+        "mean_abs_shap": 0.33293896558825037,
+        "mean_shap": 0.017205554985658046,
+        "std_shap": 0.42977165838187525,
+        "max_abs_shap": 1.4340007980110356,
+        "rank": 26
+      },
+      {
+        "feature": "muspy_groove_consistency",
+        "mean_abs_shap": 0.2529932942648753,
+        "mean_shap": 0.047339538686565555,
+        "std_shap": 0.3322573340755157,
+        "max_abs_shap": 1.7121782950130209,
+        "rank": 27
+      },
+      {
+        "feature": "pm_pitch_range_min_freq",
+        "mean_abs_shap": 0.23407375111034678,
+        "mean_shap": 0.00752675171182722,
+        "std_shap": 0.3496496010927632,
+        "max_abs_shap": 1.9515157557657978,
+        "rank": 28
+      },
+      {
+        "feature": "pm_tempo_bpm",
+        "mean_abs_shap": 0.22748877775011733,
+        "mean_shap": 0.06576164472294393,
+        "std_shap": 0.25091984132271017,
+        "max_abs_shap": 0.4579555507341211,
+        "rank": 29
+      },
+      {
+        "feature": "pm_average_pitch_hz",
+        "mean_abs_shap": 0.21030091807361842,
+        "mean_shap": -0.005100610199761699,
+        "std_shap": 0.3010907902619016,
+        "max_abs_shap": 1.7149720923248946,
+        "rank": 30
+      },
+      {
+        "feature": "pm_instrument_count",
+        "mean_abs_shap": 0.0,
+        "mean_shap": 0.0,
+        "std_shap": 0.0,
+        "max_abs_shap": 0.0,
+        "rank": 31
+      }
+    ]
+  },
+  "interactions": {
+    "available": false,
+    "reason": "Not a tree-based model"
+  },
+  "local_explanations": [
+    {
+      "sample_type": "low_target",
+      "test_index": 50,
+      "actual_value": 0.8099995950002025,
+      "predicted_value": -2.9533762666714125,
+      "prediction_error": -3.763375861671615,
+      "top_5_contributions": [
+        {
+          "feature": "pm_note_count",
+          "shap_value": -35.685170287568795,
+          "feature_value": -0.606654232048236
+        },
+        {
+          "feature": "muspy_pitch_entropy",
+          "shap_value": -13.662358058625383,
+          "feature_value": -2.364633437994267
+        },
+        {
+          "feature": "muspy_n_pitch_classes_used",
+          "shap_value": 13.370986958275862,
+          "feature_value": -1.6677345690699976
+        },
+        {
+          "feature": "muspy_n_pitches_used",
+          "shap_value": 11.683278625446379,
+          "feature_value": -1.4070117290830624
+        },
+        {
+          "feature": "muspy_pitch_class_entropy",
+          "shap_value": -9.337969968134109,
+          "feature_value": -2.189684099911829
+        }
+      ]
+    },
+    {
+      "sample_type": "medium_target",
+      "test_index": 60,
+      "actual_value": 4.668,
+      "predicted_value": 0.5875208795273235,
+      "prediction_error": -4.080479120472677,
+      "top_5_contributions": [
+        {
+          "feature": "pm_note_count",
+          "shap_value": -21.2293721386694,
+          "feature_value": -0.3369193134495957
+        },
+        {
+          "feature": "muspy_polyphony",
+          "shap_value": 4.445967975472793,
+          "feature_value": -0.5318388764070594
+        },
+        {
+          "feature": "pm_note_density",
+          "shap_value": -4.278151870137994,
+          "feature_value": -0.495010711635705
+        },
+        {
+          "feature": "pm_average_velocity",
+          "shap_value": 4.026100489779592,
+          "feature_value": 0.880713919047025
+        },
+        {
+          "feature": "muspy_n_pitches_used",
+          "shap_value": 3.9800179932839317,
+          "feature_value": -0.4818235111455149
+        }
+      ]
+    },
+    {
+      "sample_type": "high_target",
+      "test_index": 28,
+      "actual_value": 164.5399862883345,
+      "predicted_value": 157.74842764022551,
+      "prediction_error": -6.791558648108975,
+      "top_5_contributions": [
+        {
+          "feature": "pm_note_count",
+          "shap_value": 127.45883739286721,
+          "feature_value": 2.4374969921364187
+        },
+        {
+          "feature": "pm_note_density",
+          "shap_value": 41.19379512553024,
+          "feature_value": 5.246331177399696
+        },
+        {
+          "feature": "theory_conjuction_melody_motion",
+          "shap_value": -18.570071884950533,
+          "feature_value": 2.4141454331179153
+        },
+        {
+          "feature": "muspy_polyphony",
+          "shap_value": -18.35275358042692,
+          "feature_value": 1.9561525566991678
+        },
+        {
+          "feature": "theory_general_tonality",
+          "shap_value": 8.53982465995922,
+          "feature_value": 2.332768844599129
+        }
+      ]
+    },
+    {
+      "sample_type": "largest_error",
+      "test_index": 101,
+      "actual_value": 1.59,
+      "predicted_value": 25.513266716626404,
+      "prediction_error": 23.923266716626404,
+      "top_5_contributions": [
+        {
+          "feature": "pm_note_count",
+          "shap_value": -31.554942245026115,
+          "feature_value": -0.5295871124486246
+        },
+        {
+          "feature": "pm_average_polyphony",
+          "shap_value": -18.94875455230357,
+          "feature_value": -1.6757283332082158
+        },
+        {
+          "feature": "pm_groove",
+          "shap_value": 17.515060294160385,
+          "feature_value": 4.058437496011008
+        },
+        {
+          "feature": "muspy_n_pitch_classes_used",
+          "shap_value": 13.370986958275862,
+          "feature_value": -1.6677345690699976
+        },
+        {
+          "feature": "muspy_empty_measure_rate",
+          "shap_value": 13.353539821517856,
+          "feature_value": 2.918613264257261
+        }
+      ]
+    }
+  ],
+  "interpretation": {
+    "top_15_category_distribution": {
+      "pm_features": 5,
+      "muspy_features": 7,
+      "theory_features": 3
+    },
+    "model_performance": {
+      "name": "Ridge",
+      "test_r2": 0.7413878570316597,
+      "test_rmse": 9.041031664980808,
+      "test_mae": 7.158057562316891
+    },
+    "explainer_info": {
+      "explainer_type": "LinearExplainer",
+      "expected_value": 18.376500517017014,
+      "shap_values_shape": [
+        107,
+        31
+      ],
+      "test_samples": 107,
+      "num_features": 31
+    },
+    "key_insights": [
+      "The most important feature is 'pm_note_count' with mean |SHAP| = 22.0639",
+      "7 of the top 15 features have predominantly positive effects on the target",
+      "8 of the top 15 features have predominantly negative effects on the target",
+      "Muspy features dominate the top 15 most important features (7/15)"
+    ]
+  }
+}

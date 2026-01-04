@@ -1,0 +1,20 @@
+{
+  "artifacts": {
+    "embedding_csv": "/workspace/artifacts/features/tsne/commu_full_tsne_optimized/embedding.csv",
+    "embedding_npy": "/workspace/artifacts/features/tsne/commu_full_tsne_optimized/embedding.npy",
+    "preview_plot": "/workspace/artifacts/features/tsne/commu_full_tsne_optimized/embedding_preview.png",
+    "projection_config": "/workspace/artifacts/features/tsne/commu_full_tsne_optimized/projection_config.json",
+    "tsne_config": "/workspace/artifacts/features/tsne/commu_full_tsne_optimized/tsne_config.json"
+  },
+  "metadata": {
+    "computed_perplexity": 50.0,
+    "kl_divergence_": 1.4273678064346313,
+    "method": "tsne",
+    "n_components": 2,
+    "n_features": 17,
+    "n_iter_": 999,
+    "n_samples": 11143
+  },
+  "run_id": "commu_full_tsne_optimized",
+  "timestamp": "2025-11-25T08:04:34.090302"
+}

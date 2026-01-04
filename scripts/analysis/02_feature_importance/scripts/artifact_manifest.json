@@ -1,0 +1,9 @@
+{
+  "config": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/config.json",
+  "feature_artifact_metadata": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/feature_artifact_metadata.json",
+  "ghsom_model": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/ghsom_model.pkl",
+  "metrics": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/metrics.json",
+  "neuron_table": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/neuron_table.pkl",
+  "sample_to_cluster": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/sample_to_cluster.csv",
+  "unique_cluster_ids": "/home/user/pilot_study/experiments/ghsom_commu_bass/commu_bass_optimized/unique_cluster_ids.json"
+}

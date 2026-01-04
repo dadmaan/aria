@@ -1,0 +1,48 @@
+# Core dependencies
+numpy>=1.20.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+psutil>=5.9.0,<6.0.0
+
+# Music processing
+mido>=1.2.10,<2.0.0
+pretty_midi>=0.2.10,<0.3.0
+muspy>=0.5.0,<0.6.0
+
+# Machine learning and RL
+torch>=2.0.0,<3.0.0
+torchaudio>=2.0.0,<3.0.0
+torchvision>=0.15.0,<1.0.0
+# tianshou>=1.0.0,<2.0.0  # Requires 1.x for CollectStats API (n_collected_steps, returns attributes)
+tianshou==2.0.0  # Requires 1.x for CollectStats API (n_collected_steps, returns attributes)
+gymnasium>=1.0.0,<2.0.0
+scikit-learn>=1.0.0,<2.0.0
+scipy>=1.7.0,<2.0.0
+
+# Visualization
+matplotlib>=3.5.0,<4.0.0
+seaborn>=0.12.0,<1.0.0
+plotly>=5.0.0,<6.0.0
+networkx>=3.0.0,<4.0.0
+adjustText>=1.0.0,<2.0.0
+yellowbrick>=1.5,<2.0.0
+pydot>=1.4.0,<3.0.0
+rich>=13.0.0,<14.0.0
+
+# Utilities
+hilbert-toolkit>=0.1.4,<0.2.0
+gprof2dot>=2024.0.0
+jsonschema>=4.0.0,<5.0.0
+PyYAML>=6.0.0,<7.0.0
+wandb>=0.15.0,<1.0.0
+tabulate
+
+# Development and testing
+pytest>=7.0.0,<10.0.0
+pytest-cov>=4.0.0,<8.0.0
+black>=23.0.0
+ruff>=0.1.0
+flake8>=6.0.0,<8.0.0
+
+# GHSOM packages (local)
+-e ./ghsom-py
+-e ./ghsom-toolkits

@@ -1,0 +1,280 @@
+{
+  "dataset_info": {
+    "total_samples": 532,
+    "total_features": 35,
+    "feature_categories": {
+      "pm_features": 18,
+      "muspy_features": 13,
+      "theory_features": 4
+    }
+  },
+  "data_quality": {
+    "missing_values": {
+      "total_features_with_missing": 10,
+      "features_with_missing": [
+        "muspy_drum_in_pattern_rate_triple",
+        "muspy_drum_in_pattern_rate_duple",
+        "muspy_drum_pattern_consistency",
+        "theory_limited_macroharmony",
+        "theory_conjuction_melody_motion",
+        "theory_centricity",
+        "theory_general_tonality",
+        "pm_interval_range_min",
+        "pm_interval_range_max",
+        "pm_groove"
+      ]
+    },
+    "outliers": {
+      "features_with_many_outliers_iqr": [
+        "muspy_polyphony",
+        "pm_average_polyphony",
+        "muspy_scale_consistency",
+        "muspy_pitch_class_entropy",
+        "pm_bar_count",
+        "pm_energy",
+        "pm_note_count",
+        "pm_pitch_range_min_freq",
+        "muspy_empty_measure_rate",
+        "muspy_empty_beat_rate"
+      ]
+    }
+  },
+  "distribution_characteristics": {
+    "highly_skewed_features": [
+      "pm_energy",
+      "pm_note_count",
+      "pm_note_density",
+      "pm_pitch_range_max_freq",
+      "pm_average_pitch_hz",
+      "pm_pitch_range_min_freq",
+      "pm_groove",
+      "pm_max_polyphony",
+      "muspy_empty_measure_rate",
+      "muspy_empty_beat_rate",
+      "muspy_n_pitches_used",
+      "muspy_polyphony",
+      "pm_bar_count",
+      "muspy_pitch_class_entropy",
+      "muspy_groove_consistency",
+      "muspy_scale_consistency"
+    ],
+    "skewness_stats": {
+      "mean_abs_skewness": 2.428410196401975,
+      "max_skewness": 13.270782866481197,
+      "min_skewness": -2.619840289341543
+    }
+  },
+  "correlation_analysis": {
+    "highly_correlated_pairs_count": 25,
+    "top_correlated_pairs": [
+      {
+        "feature_1": "pm_note_count",
+        "feature_2": "pm_energy",
+        "correlation": 0.9365266242537672
+      },
+      {
+        "feature_1": "pm_note_count",
+        "feature_2": "pm_note_density",
+        "correlation": 0.9438735589099463
+      },
+      {
+        "feature_1": "pm_pitch_range_min_freq",
+        "feature_2": "pm_pitch_range_min_note",
+        "correlation": 0.9330267825285331
+      },
+      {
+        "feature_1": "pm_pitch_range_max_freq",
+        "feature_2": "pm_pitch_range_max_note",
+        "correlation": 0.8513413205363177
+      },
+      {
+        "feature_1": "pm_pitch_range_max_freq",
+        "feature_2": "pm_average_pitch_hz",
+        "correlation": 0.9581656408265431
+      },
+      {
+        "feature_1": "pm_pitch_range_max_note",
+        "feature_2": "pm_average_pitch_hz",
+        "correlation": 0.814054784376026
+      },
+      {
+        "feature_1": "pm_interval_range_min",
+        "feature_2": "muspy_pitch_range",
+        "correlation": -0.8212515709693
+      },
+      {
+        "feature_1": "pm_interval_range_min",
+        "feature_2": "theory_conjuction_melody_motion",
+        "correlation": -0.9009753537654873
+      },
+      {
+        "feature_1": "pm_interval_range_min",
+        "feature_2": "theory_general_tonality",
+        "correlation": -0.8940930206167876
+      },
+      {
+        "feature_1": "pm_interval_range_max",
+        "feature_2": "muspy_pitch_range",
+        "correlation": 0.82188660864113
+      }
+    ]
+  },
+  "multicollinearity_analysis": {
+    "vif_computed": true,
+    "total_features_analyzed": 32,
+    "features_with_high_vif": [
+      "pm_pitch_range_min_note",
+      "pm_pitch_range_max_note",
+      "muspy_empty_beat_rate",
+      "muspy_pitch_range",
+      "muspy_empty_measure_rate",
+      "pm_instrument_count",
+      "theory_conjuction_melody_motion",
+      "theory_general_tonality",
+      "theory_limited_macroharmony",
+      "muspy_pitch_entropy",
+      "muspy_pitch_class_entropy",
+      "pm_average_pitch_hz",
+      "pm_pitch_range_max_freq",
+      "pm_note_count",
+      "muspy_n_pitch_classes_used",
+      "theory_centricity",
+      "pm_energy",
+      "muspy_n_pitches_used",
+      "pm_note_density",
+      "pm_pitch_range_min_freq",
+      "muspy_polyphony",
+      "pm_average_polyphony"
+    ],
+    "features_with_infinite_vif": [
+      "pm_pitch_range_min_note",
+      "pm_pitch_range_max_note",
+      "muspy_empty_beat_rate",
+      "muspy_pitch_range",
+      "muspy_empty_measure_rate"
+    ],
+    "vif_stats": {
+      "mean_vif": 109604.09319775066,
+      "median_vif": 20.488601611838504,
+      "max_finite_vif": 2935688.9082737244,
+      "min_vif": 1.5146237385633488
+    },
+    "top_vif_features": [
+      {
+        "feature": "pm_pitch_range_min_note",
+        "VIF": "inf"
+      },
+      {
+        "feature": "pm_pitch_range_max_note",
+        "VIF": "inf"
+      },
+      {
+        "feature": "muspy_empty_beat_rate",
+        "VIF": "inf"
+      },
+      {
+        "feature": "muspy_pitch_range",
+        "VIF": "inf"
+      },
+      {
+        "feature": "muspy_empty_measure_rate",
+        "VIF": "inf"
+      },
+      {
+        "feature": "pm_instrument_count",
+        "VIF": 2935688.9082737244
+      },
+      {
+        "feature": "theory_conjuction_melody_motion",
+        "VIF": 11992.722705655651
+      },
+      {
+        "feature": "theory_general_tonality",
+        "VIF": 10964.183119311523
+      },
+      {
+        "feature": "theory_limited_macroharmony",
+        "VIF": 138.6387451122945
+      },
+      {
+        "feature": "muspy_pitch_entropy",
+        "VIF": 108.00903166865558
+      },
+      {
+        "feature": "muspy_pitch_class_entropy",
+        "VIF": 74.26738731008675
+      },
+      {
+        "feature": "pm_average_pitch_hz",
+        "VIF": 55.821945738908894
+      },
+      {
+        "feature": "pm_pitch_range_max_freq",
+        "VIF": 53.169336356066594
+      },
+      {
+        "feature": "pm_note_count",
+        "VIF": 40.72766536549592
+      },
+      {
+        "feature": "muspy_n_pitch_classes_used",
+        "VIF": 27.47973256231275
+      }
+    ]
+  },
+  "mutual_information_analysis": {
+    "total_pairs_analyzed": 496,
+    "top_mi_pairs": [
+      {
+        "feature_1": "pm_pitch_range_min_freq",
+        "feature_2": "pm_pitch_range_min_note",
+        "mutual_information": 2.7791057388259413
+      },
+      {
+        "feature_1": "pm_pitch_range_max_freq",
+        "feature_2": "pm_pitch_range_max_note",
+        "mutual_information": 2.706337227256813
+      },
+      {
+        "feature_1": "muspy_pitch_entropy",
+        "feature_2": "muspy_pitch_class_entropy",
+        "mutual_information": 2.346128947054587
+      },
+      {
+        "feature_1": "muspy_n_pitches_used",
+        "feature_2": "muspy_pitch_entropy",
+        "mutual_information": 2.1749543029505203
+      },
+      {
+        "feature_1": "pm_length_seconds",
+        "feature_2": "pm_tempo_bpm",
+        "mutual_information": 1.9957317402621775
+      },
+      {
+        "feature_1": "theory_conjuction_melody_motion",
+        "feature_2": "theory_general_tonality",
+        "mutual_information": 1.8769059946779656
+      },
+      {
+        "feature_1": "muspy_n_pitch_classes_used",
+        "feature_2": "muspy_pitch_class_entropy",
+        "mutual_information": 1.8527586861560548
+      },
+      {
+        "feature_1": "muspy_empty_beat_rate",
+        "feature_2": "muspy_empty_measure_rate",
+        "mutual_information": 1.6847510593617145
+      },
+      {
+        "feature_1": "pm_pitch_range_max_freq",
+        "feature_2": "pm_average_pitch_hz",
+        "mutual_information": 1.5026596977044964
+      },
+      {
+        "feature_1": "pm_note_count",
+        "feature_2": "pm_note_density",
+        "mutual_information": 1.4809217131913242
+      }
+    ]
+  }
+}

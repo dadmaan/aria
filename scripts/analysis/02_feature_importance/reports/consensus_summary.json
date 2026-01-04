@@ -1,0 +1,264 @@
+{
+  "analysis_info": {
+    "date": "2025-11-13 22:02:03",
+    "total_features": 32,
+    "methods": {
+      "RFE": {
+        "target": "muspy_pitch_entropy",
+        "features_selected": 5
+      },
+      "SHAP": {
+        "target": "pm_energy",
+        "features_analyzed": 31
+      },
+      "VIF": {
+        "features_analyzed": 32
+      },
+      "Correlation": {
+        "high_corr_pairs": 25
+      },
+      "Mutual_Information": {
+        "feature_pairs": 496
+      }
+    }
+  },
+  "consensus_weighting": {
+    "rfe": 0.35,
+    "shap": 0.35,
+    "vif": 0.15,
+    "corr": 0.1,
+    "mi": 0.05
+  },
+  "top_15_features": [
+    {
+      "consensus_rank": 1,
+      "feature": "pm_note_count",
+      "consensus_score": 76.9046727805572
+    },
+    {
+      "consensus_rank": 2,
+      "feature": "muspy_polyphony",
+      "consensus_score": 63.863845375721894
+    },
+    {
+      "consensus_rank": 3,
+      "feature": "muspy_n_pitches_used",
+      "consensus_score": 63.688442483363794
+    },
+    {
+      "consensus_rank": 4,
+      "feature": "pm_length_seconds",
+      "consensus_score": 62.99792252257241
+    },
+    {
+      "consensus_rank": 5,
+      "feature": "pm_average_polyphony",
+      "consensus_score": 58.94963186886307
+    },
+    {
+      "consensus_rank": 6,
+      "feature": "pm_interval_range_min",
+      "consensus_score": 56.9058668379329
+    },
+    {
+      "consensus_rank": 7,
+      "feature": "pm_average_velocity",
+      "consensus_score": 55.894931103910196
+    },
+    {
+      "consensus_rank": 8,
+      "feature": "muspy_n_pitch_classes_used",
+      "consensus_score": 55.65676234113161
+    },
+    {
+      "consensus_rank": 9,
+      "feature": "pm_tempo_bpm",
+      "consensus_score": 49.193278125308126
+    },
+    {
+      "consensus_rank": 10,
+      "feature": "muspy_pitch_class_entropy",
+      "consensus_score": 48.773052806451965
+    },
+    {
+      "consensus_rank": 11,
+      "feature": "pm_note_density",
+      "consensus_score": 48.536610435956206
+    },
+    {
+      "consensus_rank": 12,
+      "feature": "pm_groove",
+      "consensus_score": 48.309341908084065
+    },
+    {
+      "consensus_rank": 13,
+      "feature": "muspy_groove_consistency",
+      "consensus_score": 47.739372687216985
+    },
+    {
+      "consensus_rank": 14,
+      "feature": "pm_interval_range_max",
+      "consensus_score": 43.35035842421844
+    },
+    {
+      "consensus_rank": 15,
+      "feature": "muspy_scale_consistency",
+      "consensus_score": 38.98418233533365
+    }
+  ],
+  "method_agreement": {
+    "rank_correlations": {
+      "RFE_vs_SHAP": 0.48267865497309465,
+      "RFE_vs_Consensus": 0.6823367766464004,
+      "SHAP_vs_Consensus": 0.5938461538461539
+    },
+    "top10_overlap": {
+      "RFE_SHAP_jaccard": 0.3333333333333333,
+      "RFE_Consensus_jaccard": 0.5384615384615384,
+      "SHAP_Consensus_jaccard": 0.5384615384615384,
+      "shared_in_all_three": 5
+    }
+  },
+  "quality_assessment": {
+    "features_with_severe_vif": [
+      "muspy_pitch_range",
+      "pm_pitch_range_max_note",
+      "muspy_empty_measure_rate",
+      "muspy_pitch_entropy",
+      "theory_limited_macroharmony",
+      "muspy_empty_beat_rate",
+      "theory_conjuction_melody_motion",
+      "pm_instrument_count",
+      "pm_pitch_range_min_note",
+      "theory_general_tonality"
+    ],
+    "high_correlation_in_top15": [
+      [
+        "pm_note_count",
+        "pm_note_density",
+        0.9438735589099464
+      ],
+      [
+        "muspy_n_pitch_classes_used",
+        "muspy_pitch_class_entropy",
+        0.9311055824279004
+      ]
+    ],
+    "features_with_issues_in_top15": [
+      "pm_note_count",
+      "muspy_n_pitch_classes_used",
+      "muspy_pitch_class_entropy",
+      "pm_note_density"
+    ]
+  },
+  "feature_clusters": {
+    "n_clusters": 20,
+    "cluster_representatives": [
+      {
+        "cluster": 1,
+        "feature": "pm_bar_count",
+        "consensus_rank": 17.0
+      },
+      {
+        "cluster": 2,
+        "feature": "pm_tempo_bpm",
+        "consensus_rank": 9.0
+      },
+      {
+        "cluster": 3,
+        "feature": "theory_limited_macroharmony",
+        "consensus_rank": 27.0
+      },
+      {
+        "cluster": 4,
+        "feature": "pm_pitch_range_min_freq",
+        "consensus_rank": 21.0
+      },
+      {
+        "cluster": 5,
+        "feature": "pm_average_pitch_hz",
+        "consensus_rank": 20.0
+      },
+      {
+        "cluster": 6,
+        "feature": "muspy_polyphony",
+        "consensus_rank": 2.0
+      },
+      {
+        "cluster": 7,
+        "feature": "pm_average_polyphony",
+        "consensus_rank": 5.0
+      },
+      {
+        "cluster": 8,
+        "feature": "pm_max_polyphony",
+        "consensus_rank": 16.0
+      },
+      {
+        "cluster": 9,
+        "feature": "pm_groove",
+        "consensus_rank": 12.0
+      },
+      {
+        "cluster": 10,
+        "feature": "muspy_n_pitches_used",
+        "consensus_rank": 3.0
+      },
+      {
+        "cluster": 11,
+        "feature": "pm_length_seconds",
+        "consensus_rank": 4.0
+      },
+      {
+        "cluster": 12,
+        "feature": "muspy_empty_measure_rate",
+        "consensus_rank": 24.0
+      },
+      {
+        "cluster": 13,
+        "feature": "muspy_groove_consistency",
+        "consensus_rank": 13.0
+      },
+      {
+        "cluster": 14,
+        "feature": "pm_note_count",
+        "consensus_rank": 1.0
+      },
+      {
+        "cluster": 15,
+        "feature": "pm_average_velocity",
+        "consensus_rank": 7.0
+      },
+      {
+        "cluster": 16,
+        "feature": "muspy_scale_consistency",
+        "consensus_rank": 15.0
+      },
+      {
+        "cluster": 17,
+        "feature": "pm_instrument_count",
+        "consensus_rank": 30.0
+      },
+      {
+        "cluster": 18,
+        "feature": "muspy_drum_in_pattern_rate_duple",
+        "consensus_rank": NaN
+      },
+      {
+        "cluster": 19,
+        "feature": "muspy_drum_in_pattern_rate_triple",
+        "consensus_rank": NaN
+      },
+      {
+        "cluster": 20,
+        "feature": "muspy_drum_pattern_consistency",
+        "consensus_rank": NaN
+      }
+    ]
+  },
+  "statistical_significance": {
+    "rfe_selected": 5,
+    "shap_significant": 30,
+    "both_significant": 5
+  }
+}

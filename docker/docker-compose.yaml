@@ -1,0 +1,156 @@
+# =============================================================================
+# ARIA Music Generation - Docker Compose (GPU-Enabled)
+# =============================================================================
+# Usage:
+#   docker-compose build                    # Build the image
+#   docker-compose up -d                    # Start container in background
+#   docker-compose exec music-generation-rl bash  # Interactive shell
+#   docker-compose --profile notebook up    # Start with Jupyter notebook
+#   docker-compose down                     # Stop and remove containers
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Main Training Service (GPU-Enabled)
+  # ---------------------------------------------------------------------------
+  music-generation-rl:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: aria-music-generation:gpu
+    container_name: aria-music-rl
+
+    # GPU Configuration - Reserve all available GPUs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+        limits:
+          memory: 32G
+
+    # Environment Variables
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTHONPATH=/workspace
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - WANDB_MODE=${WANDB_MODE:-disabled}
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
+      - OMP_NUM_THREADS=${OMP_NUM_THREADS:-4}
+
+    # Volume Mounts for Development (hot-reload enabled)
+    volumes:
+      # Source code - mounted for live development
+      - ../src:/workspace/src:rw
+      - ../scripts:/workspace/scripts:rw
+      - ../configs:/workspace/configs:rw
+
+      # Data and output directories - persistent storage
+      - ../data:/workspace/data:rw
+      - ../artifacts:/workspace/artifacts:rw
+      - ../outputs:/workspace/outputs:rw
+      - ../notebooks:/workspace/notebooks:rw
+
+      # Logs directory
+      - ../logs:/workspace/logs:rw
+
+    # Working directory
+    working_dir: /workspace
+
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Network
+    networks:
+      - aria-network
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import torch; assert torch.cuda.is_available()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # Jupyter Notebook Service (Optional - GPU-Enabled)
+  # ---------------------------------------------------------------------------
+  # Start with: docker-compose --profile notebook up
+  notebook:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: aria-music-generation:gpu
+    container_name: aria-jupyter
+    profiles:
+      - notebook
+
+    # GPU Configuration
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+        limits:
+          memory: 16G
+
+    # Environment Variables
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTHONPATH=/workspace
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - WANDB_MODE=${WANDB_MODE:-disabled}
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN:-}
+
+    # Volume Mounts
+    volumes:
+      - ../src:/workspace/src:rw
+      - ../scripts:/workspace/scripts:rw
+      - ../configs:/workspace/configs:rw
+      - ../data:/workspace/data:rw
+      - ../artifacts:/workspace/artifacts:rw
+      - ../outputs:/workspace/outputs:rw
+      - ../notebooks:/workspace/notebooks:rw
+      - ../logs:/workspace/logs:rw
+
+    # Port mapping for Jupyter Lab
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+
+    # Working directory
+    working_dir: /workspace
+
+    # Start Jupyter Lab
+    command: >
+      jupyter lab
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --NotebookApp.token='${JUPYTER_TOKEN:-}'
+      --NotebookApp.password=''
+      --notebook-dir=/workspace/notebooks
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Network
+    networks:
+      - aria-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  aria-network:
+    driver: bridge

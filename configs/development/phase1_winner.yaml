@@ -1,0 +1,152 @@
+cli_human_feedback: null
+debug:
+  debug_summaries: false
+  summarize_grads_and_vars: false
+enable_terminal_ui: true
+evaluation:
+  deterministic: true
+  enabled: true
+  interval: 100
+  num_episodes: 10
+feature_observation_mode: centroid
+feature_observation_source: tsne
+feature_weights:
+  distance_weight: 1.0
+  grid_weight: 0.25
+  neighbor_weight: 0.5
+features:
+  artifact_path: artifacts/features/tsne/commu_full_filtered_tsne
+  type: tsne
+ghsom:
+  checkpoint: null
+  default_model_path: artifacts/ghsom_commu_tsne/ghsom_model.pkl
+human_feedback_enabled: false
+human_feedback_timeout: 5
+interaction_timeout: 30
+logging:
+  comprehensive:
+    enabled: true
+    gradient_log_freq: 10
+    log_ghsom_metrics: true
+    log_model_info: true
+    log_system_metrics: true
+    log_to_local: true
+    log_to_tensorboard: true
+    log_training_metrics: true
+    q_value_log_freq: 10
+    system_metrics_freq: 10
+  reward_components:
+    enabled: true
+    export_frequency: 1000
+    log_frequency: 10
+    log_to_local: true
+    log_to_tensorboard: true
+    log_to_wandb: true
+    max_history: 10000
+  tensorboard:
+    enabled: true
+    histogram_interval: 100
+    log_dir: logs
+    log_histograms: false
+    log_interval: 10
+  wandb:
+    enabled: true
+    entity: null
+    log_interval: 10
+    project: ARIA_rl_V04
+    save_code: true
+    tags:
+    - benchmark
+    - phase1
+    - exp1.4
+    - drqn_large
+    - seed42
+monitoring:
+  gradient_log_freq: 100
+  log_training_metrics: true
+  q_value_log_freq: 100
+music:
+  sequence_length: 16
+network:
+  activation_fn: elu
+  dropout: 0.2
+  embedding_dim: 64
+  fc_hidden_sizes:
+  - 128
+  - 64
+  lstm:
+    hidden_size: 256
+    num_layers: 1
+  type: drqn
+non_interactive_mode: true
+paths:
+  checkpoint_dir: null
+  output_dir: artifacts/training/benchmark/phase1_network/bench_p1_drqn_h256_s42_251205_1548
+  run_id: bench_p1_drqn_h256_s42_251205_1548
+  tensorboard_log_dir: logs
+print_episode_output: false
+render_midi: false
+reward_components:
+  diversity:
+    enabled: true
+    optimal_ratio_high: 0.75
+    optimal_ratio_low: 0.62
+    repetition_penalty: -0.3
+    weight: 0.35
+  structure:
+    enabled: true
+    weight: 0.35
+  transition:
+    enabled: true
+    max_distance: 60.0
+    structural_weight: 0.3
+    weight: 0.3
+reward_context_window: 5
+system:
+  device: auto
+  enable_gpu: true
+  seed: 42
+  verbose: 1
+terminal_ui:
+  max_history_length: 100
+  mode: simple
+  refresh_rate: 4
+  show_ghsom_hierarchy: true
+  show_sequence_visual: true
+  show_sparklines: true
+training:
+  batch_size: 32
+  buffer_size: 10000
+  episode_per_test: 10
+  exploration:
+    final_eps: 0.05
+    fraction: 0.5
+    initial_eps: 1.0
+  gamma: 0.95
+  learning_rate: 0.001
+  learning_rate_scheduler:
+    decay_rate: 0.995
+    decay_steps: 5000
+    enabled: true
+    final_lr: 0.0001
+    initial_lr: 0.001
+    pulse_mechanism:
+      adaptive_threshold:
+        baseline_alpha: 0.1
+        enabled: true
+        relative_drop_threshold: 0.15
+      boost_epsilon: 0.3
+      duration_episodes: 50
+      enabled: true
+      trigger_mode: adaptive
+      trigger_threshold: 8.0
+    type: exponential
+  log_interval: 100
+  start_timesteps: 1000
+  step_per_collect: 1
+  step_per_epoch: 1000
+  target_update_freq: 1000
+  total_timesteps: 50000
+use_feature_observations: true
+use_incremental_rewards: true
+use_normalized_observations: false

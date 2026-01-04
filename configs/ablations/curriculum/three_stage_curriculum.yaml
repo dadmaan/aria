@@ -1,0 +1,199 @@
+# Ablation Benchmark - Curriculum: 3-Stage Curriculum (Full)
+# Purpose: Full 3-stage curriculum (5 -> 12 -> 22 actions)
+# Table: curriculum_ablation (Table 4)
+# Date: 2025-12-17
+
+experiment_name: "ablation_curriculum_3stage"
+experiment_group: "ablation_benchmark"
+run_name_prefix: "curriculum_3stage"
+
+# ========================================
+# Observation Configuration
+# ========================================
+use_feature_observations: true
+use_normalized_observations: false
+feature_observation_mode: prototype
+feature_observation_source: tsne
+
+# ========================================
+# Network Configuration - Dueling DRQN + PER (optimal)
+# ========================================
+network:
+  type: dueling_drqn
+  embedding_dim: 64
+  fc_hidden_sizes:
+    - 128
+    - 64
+  activation_fn: elu
+  dropout: 0.2
+  lstm:
+    hidden_size: 256
+    num_layers: 1
+
+# ========================================
+# Algorithm Configuration
+# ========================================
+algorithm:
+  type: dueling_dqn
+  prioritized_replay:
+    enabled: true
+    alpha: 0.6
+    beta: 0.4
+    beta_final: 1.0
+    beta_anneal_step: 100000
+
+# ========================================
+# Training Configuration
+# ========================================
+training:
+  total_timesteps: 100000
+  step_per_epoch: 1000
+  step_per_collect: 1
+  episode_per_test: 10
+  batch_size: 32
+  buffer_size: 100000
+  learning_rate: 0.0001
+  gamma: 0.95
+  target_update_freq: 1000
+  log_interval: 100
+
+  exploration:
+    initial_eps: 1.0
+    final_eps: 0.05
+    fraction: 0.3
+
+  learning_rate_scheduler:
+    enabled: true
+    type: exponential
+    initial_lr: 0.001
+    final_lr: 0.0001
+    decay_rate: 0.995
+    decay_steps: 5000
+    pulse_mechanism:
+      enabled: false
+
+  start_timesteps: 1000
+
+# ========================================
+# Reward Configuration
+# ========================================
+use_incremental_rewards: true
+reward_context_window: 5
+
+reward_components:
+  structure:
+    weight: 0.25
+    enabled: true
+  transition:
+    weight: 0.5
+    enabled: true
+    structural_weight: 0.3
+    max_distance: 60.0
+  diversity:
+    weight: 0.25
+    enabled: true
+    optimal_ratio_low: 0.62
+    optimal_ratio_high: 0.75
+    repetition_penalty: -0.3
+
+feature_weights:
+  distance_weight: 1.0
+  neighbor_weight: 0.5
+  grid_weight: 0.25
+
+# ========================================
+# Curriculum Learning - 3-STAGE (FULL)
+# ========================================
+curriculum:
+  enabled: true
+  ghsom_experiment_path: null
+  timesteps_per_action: 1000
+  patience_per_action: 150
+  plateau_threshold: 0.01
+  # Full 3-stage: uses all GHSOM hierarchy levels
+
+# ========================================
+# Environment Configuration
+# ========================================
+music:
+  sequence_length: 16
+
+ghsom:
+  checkpoint: null
+  default_model_path: artifacts/ghsom_commu_tsne/ghsom_model.pkl
+
+features:
+  artifact_path: artifacts/features/tsne/commu_full_filtered_tsne
+  type: tsne
+
+# ========================================
+# Logging Configuration
+# ========================================
+logging:
+  wandb:
+    enabled: true
+    project: ARIA_ABLATION_BENCHMARK
+    run_name_prefix: curriculum_3stage
+    entity: null
+    tags: ['curriculum', '3stage', 'full', 'cl', 'ablation']
+    log_interval: 10
+    save_code: false
+
+  tensorboard:
+    enabled: true
+    log_dir: logs
+    log_interval: 10
+    log_histograms: false
+    histogram_interval: 100
+
+  comprehensive:
+    enabled: true
+    log_system_metrics: true
+    log_model_info: true
+    log_ghsom_metrics: true
+    log_training_metrics: true
+    log_to_tensorboard: true
+    log_to_local: true
+    system_metrics_freq: 10
+    q_value_log_freq: 10
+    gradient_log_freq: 10
+
+  reward_components:
+    enabled: true
+    log_frequency: 10
+    export_frequency: 1000
+    log_to_wandb: true
+    log_to_tensorboard: true
+    log_to_local: true
+    max_history: 10000
+
+paths:
+  output_dir: outputs/ablation_benchmark
+  tensorboard_log_dir: logs
+  checkpoint_dir: null
+
+evaluation:
+  enabled: true
+  interval: 100
+  num_episodes: 5
+  deterministic: true
+
+# ========================================
+# System Configuration
+# ========================================
+enable_terminal_ui: false
+system:
+  device: auto
+  enable_gpu: true
+  seed: 42
+  verbose: 1
+
+interaction_timeout: 30
+non_interactive_mode: true
+human_feedback_enabled: false
+render_midi: false
+print_episode_output: false
+
+debug:
+  summarize_grads_and_vars: false
+  debug_summaries: false

@@ -1,0 +1,9 @@
+{
+  "config": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/config.json",
+  "feature_artifact_metadata": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/feature_artifact_metadata.json",
+  "ghsom_model": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/ghsom_model.pkl",
+  "metrics": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/metrics.json",
+  "neuron_table": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/neuron_table.pkl",
+  "sample_to_cluster": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/sample_to_cluster.csv",
+  "unique_cluster_ids": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125/unique_cluster_ids.json"
+}

@@ -1,0 +1,11 @@
+feature,missing_count,missing_percentage
+muspy_drum_in_pattern_rate_triple,532,100.0
+muspy_drum_in_pattern_rate_duple,532,100.0
+muspy_drum_pattern_consistency,532,100.0
+theory_limited_macroharmony,268,50.37593984962406
+theory_conjuction_melody_motion,268,50.37593984962406
+theory_centricity,268,50.37593984962406
+theory_general_tonality,268,50.37593984962406
+pm_interval_range_min,17,3.195488721804511
+pm_interval_range_max,17,3.195488721804511
+pm_groove,17,3.195488721804511

@@ -1,0 +1,2 @@
+feature_1,feature_2,interaction_strength,note
+N/A,N/A,N/A,"SHAP interaction values are only available for tree-based models. Best model selected was Ridge (linear model), which does not support TreeExplainer-based interaction analysis. To obtain interaction values, consider using RandomForest, GradientBoosting, or XGBoost models."

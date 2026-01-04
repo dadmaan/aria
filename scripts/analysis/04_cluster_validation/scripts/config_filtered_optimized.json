@@ -1,0 +1,23 @@
+{
+  "model_dir": "/workspace/experiments/ghsom_commu_full_tsne_optimized_20251125",
+  "metadata_csv": "/workspace/artifacts/features/raw/commu_full/features_with_metadata.csv",
+  "midi_root": "/workspace/data/raw/commu/full",
+  "output_root": "/workspace/outputs/ghsom_cluster_analysis/filtered_optimized_final",
+  "sampling": {
+    "samples_per_cluster": 5,
+    "sampling_method": "random",
+    "random_seed": 42,
+    "min_samples_threshold": 3
+  },
+  "rendering": {
+    "sample_rate": 44100,
+    "format": "wav",
+    "normalize": true,
+    "parallel_jobs": 4,
+    "soundfont": null
+  },
+  "analysis": {
+    "distance_metric": "cosine"
+  },
+  "stop_on_error": true
+}

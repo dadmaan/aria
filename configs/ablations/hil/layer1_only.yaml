@@ -1,0 +1,159 @@
+# HIL Ablation - Layer 1 Only (Q-Penalty)
+# Purpose: Test Layer 1 (fast Q-penalty) alone
+# Table: layer_ablation (Table 9)
+# Date: 2025-12-17
+
+# ============================================================================
+# HIL THREE-LAYER ABLATION: LAYER 1 ONLY (Q-PENALTY)
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# PATHS AND RESOURCES
+# ----------------------------------------------------------------------------
+paths:
+  cluster_profiles: "artifacts/ghsom_commu_tsne/cluster_profiles.csv"
+  ghsom_dir: "artifacts/ghsom_commu_tsne"
+  features_dir: "artifacts/features"
+  output_base: "outputs"
+  inference_output: "outputs/ablation_benchmark/hil"
+  simulation_output: "outputs/ablation_benchmark/hil"
+  analysis_output: "outputs/ablation_benchmark/hil/analysis"
+
+# ----------------------------------------------------------------------------
+# FEEDBACK SIMULATION PARAMETERS
+# ----------------------------------------------------------------------------
+feedback:
+  base_rating: 3.0
+  noise_std: 0.3
+  dimension_noise:
+    quality: 0.2
+    coherence: 0.3
+    creativity: 0.4
+    musicality: 0.2
+  desirable_multiplier: 2.5
+  undesirable_multiplier: 4.0
+  weights:
+    quality: 0.3
+    coherence: 0.2
+    creativity: 0.2
+    musicality: 0.3
+  strictness: 1.2
+  thresholds:
+    low: 2.5
+    medium: 3.0
+    high: 3.5
+    default: 2.8
+
+# ----------------------------------------------------------------------------
+# ADAPTATION PARAMETERS - LAYER 1 ONLY
+# ----------------------------------------------------------------------------
+adaptation:
+  default_mode: "q_penalty"
+
+  # Layer 1: Q-Penalty - ENABLED
+  q_penalty:
+    enabled: true  # ABLATION: Layer 1 ENABLED (only active layer)
+    strength: 10.0
+    decay_rate: 0.05
+    min_penalty: -20.0
+    max_penalty: 0.0
+
+  # Layer 2: Reward Shaping - DISABLED
+  reward_shaping:
+    enabled: false  # ABLATION: Layer 2 DISABLED
+    strength: 0.0
+    accumulation_rate: 0.7
+    decay_factor: 0.98
+    min_modifier: -10.0
+    max_modifier: 10.0
+
+  # Exploration parameters
+  epsilon_greedy: 0.5
+  exploration:
+    enable_during_simulation: true
+    mode: "epsilon_greedy"
+    deterministic_inference: false
+    epsilon:
+      initial: 0.5
+      final: 0.05
+      decay_schedule: "linear"
+      warmup_iterations: 50
+
+# ----------------------------------------------------------------------------
+# POLICY LEARNING - Layer 3: DISABLED
+# ----------------------------------------------------------------------------
+policy_learning:
+  enable: false  # ABLATION: Layer 3 DISABLED
+  learning_rate: 0.0005
+  update_frequency: 5
+  min_buffer_size: 16
+  batch_size: 32
+  gamma: 0.95
+  gradient_clip: 0.5
+  buffer_size: 2000
+  reward_alpha: 0.2
+  cluster_bonus: 0.1
+
+# ----------------------------------------------------------------------------
+# SIMULATION PARAMETERS
+# ----------------------------------------------------------------------------
+simulation:
+  num_iterations: 500
+  num_seeds: 5
+  log_interval: 25
+  batch_size: 1
+  seed_start: 42
+  convergence:
+    enable: true
+    patience: 25
+    min_improvement: 0.02
+
+# ----------------------------------------------------------------------------
+# SEQUENCE GENERATION PARAMETERS
+# ----------------------------------------------------------------------------
+generation:
+  max_length: 16
+  min_length: 10
+  default_mode: "sample"
+  temperature: 1.0
+  top_k: 0
+  top_p: 0.9
+
+# ----------------------------------------------------------------------------
+# CHECKPOINT SAVING
+# ----------------------------------------------------------------------------
+checkpoint:
+  save_after_simulation: false
+  output_subdir: "adapted_checkpoints"
+  filename_pattern: "ablation_layer1_only_{scenario}_{timestamp}.pth"
+
+# ----------------------------------------------------------------------------
+# EXPERIMENTAL FEATURES
+# ----------------------------------------------------------------------------
+experimental:
+  adaptive_threshold:
+    enable: true
+    adjustment_rate: 0.03
+    min_threshold: 2.5
+    max_threshold: 3.5
+    no_improvement_patience: 100
+  learning_verification:
+    enable: true
+    diversity_threshold: 0.02
+    improvement_threshold: 0.05
+    trend_significance: 0.05
+
+# ----------------------------------------------------------------------------
+# LOGGING
+# ----------------------------------------------------------------------------
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  save_logs: true
+  log_dir: "logs/ablation_benchmark/hil"
+  verbose: false
+  show_progress: true
+  debug:
+    save_intermediates: false
+    profile_performance: false
+    validate_inputs: true

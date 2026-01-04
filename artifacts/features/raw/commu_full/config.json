@@ -1,0 +1,19 @@
+{
+  "dataset_root": "/workspace/data/raw/commu/full",
+  "metadata_csv": "/tmp/adapted_metadata_20251117_151354.csv",
+  "output_root": "/workspace/artifacts/features/raw",
+  "metadata_index_column": "id",
+  "metadata_path_column": "file_path",
+  "metadata_split_column": "split",
+  "include_splits": null,
+  "extensions": [
+    ".mid",
+    ".midi"
+  ],
+  "run_id": "commu_full",
+  "seed": 7,
+  "overwrite": false,
+  "max_files": null,
+  "num_workers": 16,
+  "save_per_file": false
+}

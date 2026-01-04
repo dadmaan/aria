@@ -1,0 +1,24 @@
+elimination_step,features_eliminated,n_features_remaining,cv_score
+1,None (selected),27,
+2,muspy_polyphony,22,0.9961738349876619
+3,pm_interval_range_min,21,0.9961866748134959
+4,pm_length_seconds,20,0.9961318783556738
+5,pm_note_density,19,0.9962076672682727
+6,pm_average_pitch_hz,18,0.9961841235220487
+7,pm_energy,17,0.996157055391576
+8,muspy_empty_measure_rate,16,0.9960039910835565
+9,pm_pitch_range_max_note,15,0.9960981667057421
+10,pm_average_velocity,14,0.9962654137200995
+11,pm_tempo_bpm,13,0.9961030353354035
+12,muspy_groove_consistency,12,0.9964020224937448
+13,pm_average_polyphony,11,0.9963576311943122
+14,pm_interval_range_max,10,0.9962558330920921
+15,pm_groove,9,0.996099244922455
+16,muspy_scale_consistency,8,0.9963897790138976
+17,pm_max_polyphony,7,0.9962664806747107
+18,pm_pitch_range_min_freq,6,0.9966508103640169
+19,pm_pitch_range_max_freq,5,0.9967539380027721
+20,pm_bar_count,4,0.9968607023300082
+21,muspy_empty_beat_rate,3,0.9967727230528742
+22,pm_pitch_range_min_note,2,0.9968891165610471
+23,pm_instrument_count,1,0.997036421801672

@@ -1,0 +1,211 @@
+{
+  "analysis_info": {
+    "date": "2025-11-13",
+    "target_variable": "muspy_pitch_entropy",
+    "target_justification": "Represents musical complexity and pitch diversity. Well-distributed continuous variable that captures an important aspect of musical structure.",
+    "total_samples": 532,
+    "initial_features": 34,
+    "features_after_preprocessing": 27,
+    "random_state": 42
+  },
+  "data_preprocessing": {
+    "features_removed_100_missing": [
+      "muspy_drum_in_pattern_rate_triple",
+      "muspy_drum_in_pattern_rate_duple",
+      "muspy_drum_pattern_consistency"
+    ],
+    "features_removed_high_missing": [
+      "theory_conjuction_melody_motion",
+      "theory_limited_macroharmony",
+      "theory_centricity",
+      "theory_general_tonality"
+    ],
+    "total_features_removed": 7,
+    "missing_value_strategy": "Median imputation for features with <40% missing",
+    "scaling_method": "RobustScaler (due to outliers)",
+    "final_feature_count": 27
+  },
+  "target_statistics": {
+    "mean": 2.1185489808707816,
+    "std": 0.9287775288848865,
+    "min": -0.0,
+    "max": 4.286790198827113,
+    "median": 2.2335983026183044
+  },
+  "baseline_models": {
+    "models_tested": [
+      "RandomForest",
+      "GradientBoosting",
+      "LinearRegression"
+    ],
+    "cv_folds": 5,
+    "best_model": "GradientBoosting",
+    "best_cv_r2": 0.9960580161266644,
+    "model_comparison": [
+      {
+        "Model": "GradientBoosting",
+        "CV_R2_Mean": 0.9960580161266644,
+        "CV_R2_Std": 0.0016694024535611662,
+        "CV_RMSE_Mean": 0.056020443962972954,
+        "CV_RMSE_Std": 0.0309990339578824,
+        "CV_MAE_Mean": 0.02847864142835228,
+        "CV_MAE_Std": 0.004681172291321982,
+        "Train_R2": 0.9999583869117201,
+        "Train_RMSE": 0.005985743708132584,
+        "Train_MAE": 0.004221362730939227
+      },
+      {
+        "Model": "RandomForest",
+        "CV_R2_Mean": 0.9947911955335865,
+        "CV_R2_Std": 0.002030877869410705,
+        "CV_RMSE_Mean": 0.06474733202714679,
+        "CV_RMSE_Std": 0.03171466881158298,
+        "CV_MAE_Mean": 0.033383142733410406,
+        "CV_MAE_Std": 0.004960923272111511,
+        "Train_R2": 0.9988512702313058,
+        "Train_RMSE": 0.03144937953446327,
+        "Train_MAE": 0.015060813070649624
+      },
+      {
+        "Model": "LinearRegression",
+        "CV_R2_Mean": 0.9762932856848348,
+        "CV_R2_Std": 0.025860612395672847,
+        "CV_RMSE_Mean": 0.13343348782253997,
+        "CV_RMSE_Std": 0.12818768488884597,
+        "CV_MAE_Mean": 0.0772730550308199,
+        "CV_MAE_Std": 0.005087762145307217,
+        "Train_R2": 0.9904036829341254,
+        "Train_RMSE": 0.09089823243093159,
+        "Train_MAE": 0.06842183198691798
+      }
+    ]
+  },
+  "rfecv_analysis": {
+    "best_configuration": {
+      "step": 1,
+      "min_features": 5
+    },
+    "optimal_n_features": 5,
+    "best_cv_score": 0.997036421801672,
+    "configurations_tested": [
+      {
+        "step": 1,
+        "min_features_to_select": 5,
+        "optimal_n_features": 5,
+        "max_cv_score": 0.997036421801672
+      },
+      {
+        "step": 1,
+        "min_features_to_select": 10,
+        "optimal_n_features": 10,
+        "max_cv_score": 0.9966508103640169
+      },
+      {
+        "step": 1,
+        "min_features_to_select": 15,
+        "optimal_n_features": 16,
+        "max_cv_score": 0.9964020224937448
+      },
+      {
+        "step": 2,
+        "min_features_to_select": 5,
+        "optimal_n_features": 7,
+        "max_cv_score": 0.9967938562703346
+      },
+      {
+        "step": 2,
+        "min_features_to_select": 10,
+        "optimal_n_features": 10,
+        "max_cv_score": 0.9966313942544348
+      },
+      {
+        "step": 2,
+        "min_features_to_select": 15,
+        "optimal_n_features": 17,
+        "max_cv_score": 0.9961597821361448
+      },
+      {
+        "step": 5,
+        "min_features_to_select": 5,
+        "optimal_n_features": 5,
+        "max_cv_score": 0.9967500904007902
+      },
+      {
+        "step": 5,
+        "min_features_to_select": 10,
+        "optimal_n_features": 10,
+        "max_cv_score": 0.9967033261715255
+      },
+      {
+        "step": 5,
+        "min_features_to_select": 15,
+        "optimal_n_features": 15,
+        "max_cv_score": 0.996312792536259
+      }
+    ],
+    "improvement_over_baseline": 0.0009784056750075099
+  },
+  "feature_selection_results": {
+    "selected_features": [
+      "pm_note_count",
+      "muspy_pitch_class_entropy",
+      "muspy_pitch_range",
+      "muspy_n_pitches_used",
+      "muspy_n_pitch_classes_used"
+    ],
+    "n_selected_features": 5,
+    "selection_rate": 0.18518518518518517,
+    "top_15_features": [
+      "pm_note_count",
+      "muspy_pitch_class_entropy",
+      "muspy_pitch_range",
+      "muspy_n_pitches_used",
+      "muspy_n_pitch_classes_used",
+      "muspy_polyphony",
+      "pm_interval_range_min",
+      "pm_length_seconds",
+      "pm_note_density",
+      "pm_average_pitch_hz",
+      "pm_energy",
+      "muspy_empty_measure_rate",
+      "pm_pitch_range_max_note",
+      "pm_average_velocity",
+      "pm_tempo_bpm"
+    ]
+  },
+  "feature_importance_methods": {
+    "methods_used": [
+      "RFE Ranking",
+      "Tree-based Feature Importance (RF, GB)",
+      "Permutation Importance (all models)"
+    ],
+    "consensus_top_10": [
+      "pm_note_count",
+      "muspy_pitch_class_entropy",
+      "muspy_pitch_range",
+      "muspy_n_pitches_used",
+      "muspy_n_pitch_classes_used",
+      "muspy_polyphony",
+      "pm_interval_range_min",
+      "pm_length_seconds",
+      "pm_note_density",
+      "pm_average_pitch_hz"
+    ]
+  },
+  "output_files": {
+    "data_files": [
+      "rfe_rankings.csv",
+      "rfe_elimination_order.csv",
+      "model_comparison.csv",
+      "feature_importance_combined.csv",
+      "rfecv_configurations.csv"
+    ],
+    "plot_files": [
+      "rfe_cv_scores.png",
+      "feature_importance_comparison.png"
+    ],
+    "report_files": [
+      "rfe_summary.json"
+    ]
+  }
+}
