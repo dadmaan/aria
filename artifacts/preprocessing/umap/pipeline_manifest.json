@@ -1,0 +1,95 @@
+{
+  "success": true,
+  "run_id": "umap",
+  "run_dir": "artifacts/preprocessing/umap",
+  "features_dir": null,
+  "reduced_dir": "artifacts/preprocessing/umap/reduced/reduced",
+  "ghsom_dir": "artifacts/preprocessing/umap/ghsom/trained",
+  "ghsom_model_path": "artifacts/preprocessing/umap/ghsom/trained/ghsom_model.pkl",
+  "reduced_artifact_path": "artifacts/preprocessing/umap/reduced/reduced",
+  "manifest_path": null,
+  "validation_reports": {
+    "dimensionality_reduction": {
+      "stage": "dimensionality_reduction",
+      "is_valid": true,
+      "warnings": [],
+      "errors": [],
+      "metrics": {
+        "sample_count": 11143,
+        "n_components": 2,
+        "dimension_variances": {
+          "dim1": 23.463459574808805,
+          "dim2": 14.20905018822108
+        }
+      }
+    },
+    "ghsom_training": {
+      "stage": "ghsom_training",
+      "is_valid": true,
+      "warnings": [],
+      "errors": [],
+      "metrics": {
+        "sample_count": 11143,
+        "num_clusters": 16,
+        "cluster_ids": [
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "min_cluster_size": 78,
+        "max_cluster_size": 1545,
+        "mean_cluster_size": 696.4375
+      }
+    }
+  },
+  "stage_metrics": {
+    "dimensionality_reduction": {
+      "sample_count": 11143,
+      "n_components": 2,
+      "dimension_variances": {
+        "dim1": 23.463459574808805,
+        "dim2": 14.20905018822108
+      }
+    },
+    "ghsom_training": {
+      "sample_count": 11143,
+      "num_clusters": 16,
+      "cluster_ids": [
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "min_cluster_size": 78,
+      "max_cluster_size": 1545,
+      "mean_cluster_size": 696.4375
+    }
+  },
+  "error_message": null,
+  "completed_at": "2026-01-27T17:34:56.275950"
+}

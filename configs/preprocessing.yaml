@@ -1,0 +1,132 @@
+# =============================================================================
+# PREPROCESSING PIPELINE CONFIGURATION
+# =============================================================================
+# Unified pipeline for: Feature Extraction -> Dimensionality Reduction -> GHSOM
+#
+# Usage:
+#   python scripts/preprocessing/run_preprocessing_pipeline.py --config configs/preprocessing.yaml
+#   python scripts/preprocessing/run_preprocessing_pipeline.py --config configs/preprocessing.yaml --run-id my_exp
+#
+# Resume from existing artifacts:
+#   python scripts/preprocessing/run_preprocessing_pipeline.py --config configs/preprocessing.yaml \
+#       --skip-feature-extraction --features-artifact artifacts/features/raw/existing_run
+# =============================================================================
+
+# =============================================================================
+# PIPELINE CONTROL
+# =============================================================================
+
+pipeline:
+  run_id: null                          # Auto-generated timestamp if null
+  seed: 42                              # Global seed for reproducibility
+  output_root: "artifacts/preprocessing"
+  overwrite: false                      # Overwrite existing run_id directory
+  stop_on_error: true                   # Stop pipeline on stage failure
+
+  stages:
+    feature_extraction: false
+    dimensionality_reduction: true
+    ghsom_training: true
+
+# =============================================================================
+# RESUME / SKIP CONFIGURATION
+# =============================================================================
+# Use these to skip stages and provide existing artifact paths
+
+resume:
+  features_artifact: "artifacts/features/filtered/commu_full_mapped"  # Path to existing features (skips extraction)
+  reduced_artifact: null                # Path to existing reduced features (skips extraction + reduction)
+
+# =============================================================================
+# STAGE 1: FEATURE EXTRACTION
+# =============================================================================
+
+feature_extraction:
+  dataset_root: "data/raw/commu/full/val/raw"  # Root directory containing MIDI files
+  metadata_csv: null                    # Optional: path to CSV with file metadata
+  metadata_index_column: "id"
+  metadata_path_column: "file_path"
+  metadata_split_column: "split"
+  include_splits: null                  # null = all splits, or ["train", "valid"]
+  extensions:
+    - ".mid"
+    - ".midi"
+  max_files: null                       # null = process all files
+  save_per_file: false                  # Save individual JSON per MIDI file
+
+  # Feature selection: "full" for all features, or list of specific feature names
+  # Available features: pm_* (PrettyMIDI), muspy_* (MusPy), theory_* (Music Theory)
+  features:
+    - "pm_note_count"
+    - "pm_length_seconds"
+    - "pm_pitch_range_min_note"
+    - "pm_pitch_range_max_note"
+    - "muspy_n_pitches_used"
+    - "muspy_n_pitch_classes_used"
+    - "theory_conjuction_melody_motion"
+    - "pm_average_pitch_hz"
+    - "muspy_pitch_entropy"
+    - "muspy_pitch_class_entropy"
+    - "pm_interval_range_min"
+    - "pm_interval_range_max"
+    - "pm_groove"
+    - "pm_average_polyphony"
+    - "pm_max_polyphony"
+    - "pm_note_density"
+
+  # Parallel processing: number of worker processes
+  # 1 = sequential, -1 = all available CPUs, N = use N workers
+  num_workers: 4
+
+# =============================================================================
+# STAGE 2: DIMENSIONALITY REDUCTION
+# =============================================================================
+
+dimensionality_reduction:
+  method: "umap"                        # "tsne" | "pca" | "umap"
+  n_components: 2
+  standardise: true                     # Z-score standardization before reduction
+  metadata_columns:
+    - "metadata_index"                  # Columns to preserve in output
+
+  # Method-specific parameters (passed to reducer)
+  method_params: 
+    #{}                                    # PCA: no params needed
+    n_neighbors: 15                       # UMAP: number of neighbors for manifold approximation
+    min_dist: 0.1                         # UMAP: minimum distance between points
+    metric: "euclidean"                   # UMAP: distance metric
+
+    # perplexity: 100.0                   # t-SNE: perplexity
+    # learning_rate: 200.0                # t-SNE: learning rate
+    # max_iter: 1000                      # t-SNE: max iterations
+
+# =============================================================================
+# STAGE 3: GHSOM TRAINING
+# =============================================================================
+
+ghsom:
+  t1: 0.35                              # Quantization threshold for root map
+  t2: 0.05                              # Quantization threshold for child maps
+  learning_rate: 0.1
+  decay: 0.99
+  gaussian_sigma: 1.0
+  epochs: 30
+  grow_maxiter: 25
+  feature_type: "umap"                  # "tsne" | "umap" | "pca" | "raw" - which features to use
+
+# =============================================================================
+# VALIDATION SETTINGS
+# =============================================================================
+
+validation:
+  min_samples: 100                      # Minimum samples required after extraction
+  max_nan_ratio: 0.25                   # Maximum allowed NaN ratio per column (theory_* features may have ~24% NaN due to 12-note requirement)
+  min_feature_variance: 1e-6            # Minimum variance to keep a feature
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+
+logging:
+  log_level: "INFO"                     # CRITICAL, ERROR, WARNING, INFO, DEBUG
+  log_to_file: true                     # Write logs to pipeline.log

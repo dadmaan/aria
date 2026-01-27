@@ -1,0 +1,22 @@
+{
+  "extra_metadata": {},
+  "input_features": "artifacts/features/filtered/commu_full_mapped/features_numeric.csv",
+  "input_path": null,
+  "log_level": 20,
+  "metadata_columns": [
+    "metadata_index"
+  ],
+  "method": "umap",
+  "method_params": {
+    "metric": "euclidean",
+    "min_dist": 0.1,
+    "n_neighbors": 15
+  },
+  "n_components": 2,
+  "output_root": "artifacts/preprocessing/umap/reduced",
+  "overwrite": false,
+  "random_state": 42,
+  "run_id": "reduced",
+  "seed": 42,
+  "standardise": true
+}

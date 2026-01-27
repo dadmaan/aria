@@ -175,7 +175,12 @@ use_feature_observations: true
 feature_observation_mode: "prototype"
 
 # Feature observation source (only used if use_feature_observations=true)
-# Options: "tsne" | "raw"
+# Options: "tsne" | "pca" | "umap" | "raw" | "reduced"
+#   - "tsne": t-SNE reduced features (backward compatible)
+#   - "pca": PCA reduced features
+#   - "umap": UMAP reduced features
+#   - "raw": Original high-dimensional features
+#   - "reduced": Generic alias for any reduced features
 feature_observation_source: "tsne"
 
 # =============================================================================
@@ -226,9 +231,15 @@ curriculum:
 # =============================================================================
 features:
   # Path to feature artifact directory
+  # Can point to tsne/, pca/, umap/, or raw/ feature directories
   artifact_path: "artifacts/features/tsne/commu_full_filtered_tsne"
   
-  # Feature type: raw | tsne | filtered
+  # Feature type: raw | tsne | pca | umap | reduced
+  #   - "tsne": t-SNE dimensionality reduction
+  #   - "pca": PCA dimensionality reduction
+  #   - "umap": UMAP dimensionality reduction
+  #   - "raw": Original high-dimensional features
+  #   - "reduced": Generic alias for any reduced features
   type: "tsne"
 
 # =============================================================================

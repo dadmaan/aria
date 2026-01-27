@@ -1,0 +1,70 @@
+{
+  "config": {
+    "extra_metadata": {},
+    "input_features": "/workspace/artifacts/features/raw/commu_full/features_numeric.csv",
+    "input_path": null,
+    "log_level": 20,
+    "metadata_columns": [
+      "track_id",
+      "metadata_index"
+    ],
+    "method": "umap",
+    "method_params": {
+      "metric": "cosine",
+      "min_dist": 0.1,
+      "n_neighbors": 15
+    },
+    "n_components": 2,
+    "output_root": "/workspace/artifacts/features/umap",
+    "overwrite": false,
+    "random_state": 42,
+    "run_id": null,
+    "seed": 7,
+    "standardise": true
+  },
+  "feature_columns": [
+    "pm_note_count",
+    "pm_length_seconds",
+    "pm_pitch_range_min_freq",
+    "pm_pitch_range_min_note",
+    "pm_pitch_range_max_freq",
+    "pm_pitch_range_max_note",
+    "pm_average_pitch_hz",
+    "pm_average_velocity",
+    "pm_interval_range_min",
+    "pm_interval_range_max",
+    "pm_energy",
+    "pm_groove",
+    "pm_max_polyphony",
+    "pm_average_polyphony",
+    "pm_instrument_count",
+    "pm_note_density",
+    "pm_bar_count",
+    "pm_tempo_bpm",
+    "muspy_pitch_range",
+    "muspy_n_pitches_used",
+    "muspy_n_pitch_classes_used",
+    "muspy_polyphony",
+    "muspy_scale_consistency",
+    "muspy_pitch_entropy",
+    "muspy_pitch_class_entropy",
+    "muspy_empty_beat_rate",
+    "muspy_groove_consistency",
+    "muspy_empty_measure_rate",
+    "theory_centricity",
+    "theory_limited_macroharmony",
+    "theory_conjuction_melody_motion",
+    "theory_general_tonality",
+    "metadata_index"
+  ],
+  "model_summary": {
+    "embedding_max": 17.70978546142578,
+    "embedding_mean": 5.834415435791016,
+    "embedding_min": -7.299673080444336,
+    "embedding_std": 5.2347636222839355,
+    "metric": "cosine",
+    "min_dist": 0.1,
+    "n_neighbors": 15
+  },
+  "run_id": "preprocess_20260127_164813"
+}

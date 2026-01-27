@@ -1,0 +1,24 @@
+{
+  "artifacts": {
+    "embedding_csv": "artifacts/preprocessing/umap/reduced/reduced/embedding.csv",
+    "embedding_npy": "artifacts/preprocessing/umap/reduced/reduced/embedding.npy",
+    "preview_plot": "artifacts/preprocessing/umap/reduced/reduced/embedding_preview.png",
+    "projection_config": "artifacts/preprocessing/umap/reduced/reduced/projection_config.json",
+    "tsne_config": "artifacts/preprocessing/umap/reduced/reduced/tsne_config.json"
+  },
+  "metadata": {
+    "embedding_max": 16.633426666259766,
+    "embedding_mean": 7.332571983337402,
+    "embedding_min": -4.033198356628418,
+    "embedding_std": 4.689207077026367,
+    "method": "umap",
+    "metric": "euclidean",
+    "min_dist": 0.1,
+    "n_components": 2,
+    "n_features": 17,
+    "n_neighbors": 15,
+    "n_samples": 11143
+  },
+  "run_id": "reduced",
+  "timestamp": "2026-01-27T17:34:38.889735"
+}

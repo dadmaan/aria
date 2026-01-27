@@ -1,0 +1,68 @@
+run_id: tsne
+seed: 42
+output_root: artifacts/preprocessing
+overwrite: false
+stop_on_error: true
+stages:
+  feature_extraction: false
+  dimensionality_reduction: true
+  ghsom_training: true
+resume:
+  features_artifact: artifacts/features/filtered/commu_full_mapped
+  reduced_artifact: null
+feature_extraction:
+  dataset_root: data/raw/commu/full/val/raw
+  metadata_csv: null
+  metadata_index_column: id
+  metadata_path_column: file_path
+  metadata_split_column: split
+  include_splits: null
+  extensions:
+  - .mid
+  - .midi
+  max_files: null
+  save_per_file: false
+  features:
+  - pm_note_count
+  - pm_length_seconds
+  - pm_pitch_range_min_note
+  - pm_pitch_range_max_note
+  - muspy_n_pitches_used
+  - muspy_n_pitch_classes_used
+  - theory_conjuction_melody_motion
+  - pm_average_pitch_hz
+  - muspy_pitch_entropy
+  - muspy_pitch_class_entropy
+  - pm_interval_range_min
+  - pm_interval_range_max
+  - pm_groove
+  - pm_average_polyphony
+  - pm_max_polyphony
+  - pm_note_density
+  num_workers: 4
+dimensionality_reduction:
+  method: tsne
+  n_components: 2
+  standardise: true
+  metadata_columns:
+  - metadata_index
+  method_params:
+    perplexity: 100.0
+    learning_rate: 200.0
+    max_iter: 1000
+ghsom:
+  t1: 0.35
+  t2: 0.05
+  learning_rate: 0.1
+  decay: 0.99
+  gaussian_sigma: 1.0
+  epochs: 30
+  grow_maxiter: 25
+  feature_type: tsne
+validation:
+  min_samples: 100
+  max_nan_ratio: 0.25
+  min_feature_variance: 1.0e-06
+logging:
+  log_level: INFO
+  log_to_file: true

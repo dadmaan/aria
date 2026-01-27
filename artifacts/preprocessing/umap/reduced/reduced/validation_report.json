@@ -1,0 +1,14 @@
+{
+  "stage": "dimensionality_reduction",
+  "is_valid": true,
+  "warnings": [],
+  "errors": [],
+  "metrics": {
+    "sample_count": 11143,
+    "n_components": 2,
+    "dimension_variances": {
+      "dim1": 23.463459574808805,
+      "dim2": 14.20905018822108
+    }
+  }
+}

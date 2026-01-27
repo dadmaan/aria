@@ -1,0 +1,20 @@
+{
+  "artifacts": {
+    "embedding_csv": "artifacts/preprocessing/tsne/reduced/reduced/embedding.csv",
+    "embedding_npy": "artifacts/preprocessing/tsne/reduced/reduced/embedding.npy",
+    "preview_plot": "artifacts/preprocessing/tsne/reduced/reduced/embedding_preview.png",
+    "projection_config": "artifacts/preprocessing/tsne/reduced/reduced/projection_config.json",
+    "tsne_config": "artifacts/preprocessing/tsne/reduced/reduced/tsne_config.json"
+  },
+  "metadata": {
+    "computed_perplexity": 100.0,
+    "kl_divergence_": 1.342579960823059,
+    "method": "tsne",
+    "n_components": 2,
+    "n_features": 17,
+    "n_iter_": 999,
+    "n_samples": 11143
+  },
+  "run_id": "reduced",
+  "timestamp": "2026-01-27T17:28:51.879465"
+}

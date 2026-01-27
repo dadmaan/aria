@@ -1,0 +1,22 @@
+{
+  "extra_metadata": {},
+  "input_features": "artifacts/features/filtered/commu_full_mapped/features_numeric.csv",
+  "input_path": null,
+  "log_level": 20,
+  "metadata_columns": [
+    "metadata_index"
+  ],
+  "method": "tsne",
+  "method_params": {
+    "learning_rate": 200.0,
+    "max_iter": 1000,
+    "perplexity": 100.0
+  },
+  "n_components": 2,
+  "output_root": "artifacts/preprocessing/tsne/reduced",
+  "overwrite": false,
+  "random_state": 42,
+  "run_id": "reduced",
+  "seed": 42,
+  "standardise": true
+}

@@ -1,0 +1,9 @@
+{
+  "config": "artifacts/preprocessing/pca/ghsom/trained/config.json",
+  "feature_artifact_metadata": "artifacts/preprocessing/pca/ghsom/trained/feature_artifact_metadata.json",
+  "ghsom_model": "artifacts/preprocessing/pca/ghsom/trained/ghsom_model.pkl",
+  "metrics": "artifacts/preprocessing/pca/ghsom/trained/metrics.json",
+  "neuron_table": "artifacts/preprocessing/pca/ghsom/trained/neuron_table.pkl",
+  "sample_to_cluster": "artifacts/preprocessing/pca/ghsom/trained/sample_to_cluster.csv",
+  "unique_cluster_ids": "artifacts/preprocessing/pca/ghsom/trained/unique_cluster_ids.json"
+}

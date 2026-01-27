@@ -1,0 +1,49 @@
+{
+  "config": {
+    "extra_metadata": {},
+    "input_features": "artifacts/features/filtered/commu_full_mapped/features_numeric.csv",
+    "input_path": null,
+    "log_level": 20,
+    "metadata_columns": [
+      "metadata_index"
+    ],
+    "method": "tsne",
+    "method_params": {
+      "learning_rate": 200.0,
+      "max_iter": 1000,
+      "perplexity": 100.0
+    },
+    "n_components": 2,
+    "output_root": "artifacts/preprocessing/tsne/reduced",
+    "overwrite": false,
+    "random_state": 42,
+    "run_id": "reduced",
+    "seed": 42,
+    "standardise": true
+  },
+  "feature_columns": [
+    "pm_note_count",
+    "pm_length_seconds",
+    "pm_pitch_range_min_note",
+    "pm_pitch_range_max_note",
+    "muspy_n_pitches_used",
+    "muspy_n_pitch_classes_used",
+    "theory_conjuction_melody_motion",
+    "pm_average_pitch_hz",
+    "muspy_pitch_entropy",
+    "muspy_pitch_class_entropy",
+    "pm_interval_range_min",
+    "pm_interval_range_max",
+    "pm_groove",
+    "pm_average_polyphony",
+    "pm_max_polyphony",
+    "pm_note_density",
+    "metadata_index"
+  ],
+  "model_summary": {
+    "computed_perplexity": 100.0,
+    "kl_divergence_": 1.342579960823059,
+    "n_iter_": 999
+  },
+  "run_id": "reduced"
+}

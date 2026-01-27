@@ -1,0 +1,107 @@
+{
+  "success": true,
+  "run_id": "pca",
+  "run_dir": "artifacts/preprocessing/pca",
+  "features_dir": null,
+  "reduced_dir": "artifacts/preprocessing/pca/reduced/reduced",
+  "ghsom_dir": "artifacts/preprocessing/pca/ghsom/trained",
+  "ghsom_model_path": "artifacts/preprocessing/pca/ghsom/trained/ghsom_model.pkl",
+  "reduced_artifact_path": "artifacts/preprocessing/pca/reduced/reduced",
+  "manifest_path": null,
+  "validation_reports": {
+    "dimensionality_reduction": {
+      "stage": "dimensionality_reduction",
+      "is_valid": true,
+      "warnings": [],
+      "errors": [],
+      "metrics": {
+        "sample_count": 11143,
+        "n_components": 2,
+        "dimension_variances": {
+          "dim1": 6.057556114976861,
+          "dim2": 2.937074689783332
+        }
+      }
+    },
+    "ghsom_training": {
+      "stage": "ghsom_training",
+      "is_valid": true,
+      "warnings": [],
+      "errors": [],
+      "metrics": {
+        "sample_count": 11143,
+        "num_clusters": 22,
+        "cluster_ids": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          12,
+          13,
+          14,
+          15,
+          17,
+          19,
+          20,
+          21,
+          22,
+          24,
+          25,
+          26,
+          27,
+          28
+        ],
+        "min_cluster_size": 182,
+        "max_cluster_size": 1452,
+        "mean_cluster_size": 506.5
+      }
+    }
+  },
+  "stage_metrics": {
+    "dimensionality_reduction": {
+      "sample_count": 11143,
+      "n_components": 2,
+      "dimension_variances": {
+        "dim1": 6.057556114976861,
+        "dim2": 2.937074689783332
+      }
+    },
+    "ghsom_training": {
+      "sample_count": 11143,
+      "num_clusters": 22,
+      "cluster_ids": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        13,
+        14,
+        15,
+        17,
+        19,
+        20,
+        21,
+        22,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "min_cluster_size": 182,
+      "max_cluster_size": 1452,
+      "mean_cluster_size": 506.5
+    }
+  },
+  "error_message": null,
+  "completed_at": "2026-01-27T17:30:35.662020"
+}

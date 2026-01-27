@@ -1,0 +1,25 @@
+{
+  "artifacts": {
+    "embedding_csv": "artifacts/preprocessing/pca/reduced/reduced/embedding.csv",
+    "embedding_npy": "artifacts/preprocessing/pca/reduced/reduced/embedding.npy",
+    "preview_plot": "artifacts/preprocessing/pca/reduced/reduced/embedding_preview.png",
+    "projection_config": "artifacts/preprocessing/pca/reduced/reduced/projection_config.json",
+    "tsne_config": "artifacts/preprocessing/pca/reduced/reduced/tsne_config.json"
+  },
+  "metadata": {
+    "explained_variance_ratio": [
+      0.3562948526538538,
+      0.17275359467862095
+    ],
+    "method": "pca",
+    "n_components": 2,
+    "n_features": 17,
+    "n_samples": 11143,
+    "singular_values": [
+      259.79470786194275,
+      180.90021059569233
+    ]
+  },
+  "run_id": "reduced",
+  "timestamp": "2026-01-27T17:30:17.859823"
+}

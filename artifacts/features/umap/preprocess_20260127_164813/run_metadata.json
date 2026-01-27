@@ -1,0 +1,24 @@
+{
+  "artifacts": {
+    "embedding_csv": "/workspace/artifacts/features/umap/preprocess_20260127_164813/embedding.csv",
+    "embedding_npy": "/workspace/artifacts/features/umap/preprocess_20260127_164813/embedding.npy",
+    "preview_plot": "/workspace/artifacts/features/umap/preprocess_20260127_164813/embedding_preview.png",
+    "projection_config": "/workspace/artifacts/features/umap/preprocess_20260127_164813/projection_config.json",
+    "tsne_config": "/workspace/artifacts/features/umap/preprocess_20260127_164813/tsne_config.json"
+  },
+  "metadata": {
+    "embedding_max": 17.70978546142578,
+    "embedding_mean": 5.834415435791016,
+    "embedding_min": -7.299673080444336,
+    "embedding_std": 5.2347636222839355,
+    "method": "umap",
+    "metric": "cosine",
+    "min_dist": 0.1,
+    "n_components": 2,
+    "n_features": 33,
+    "n_neighbors": 15,
+    "n_samples": 11143
+  },
+  "run_id": "preprocess_20260127_164813",
+  "timestamp": "2026-01-27T16:48:36.243016"
+}

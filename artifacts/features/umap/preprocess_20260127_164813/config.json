@@ -1,0 +1,23 @@
+{
+  "extra_metadata": {},
+  "input_features": "/workspace/artifacts/features/raw/commu_full/features_numeric.csv",
+  "input_path": null,
+  "log_level": 20,
+  "metadata_columns": [
+    "track_id",
+    "metadata_index"
+  ],
+  "method": "umap",
+  "method_params": {
+    "metric": "cosine",
+    "min_dist": 0.1,
+    "n_neighbors": 15
+  },
+  "n_components": 2,
+  "output_root": "/workspace/artifacts/features/umap",
+  "overwrite": false,
+  "random_state": 42,
+  "run_id": "preprocess_20260127_164813",
+  "seed": 7,
+  "standardise": true
+}
