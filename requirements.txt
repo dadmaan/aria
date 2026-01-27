@@ -17,6 +17,7 @@ tianshou==2.0.0  # Requires 1.x for CollectStats API (n_collected_steps, returns
 gymnasium>=1.0.0,<2.0.0
 scikit-learn>=1.0.0,<2.0.0
 scipy>=1.7.0,<2.0.0
+umap-learn>=0.5.0,<1.0.0
 
 # Visualization
 matplotlib>=3.5.0,<4.0.0
