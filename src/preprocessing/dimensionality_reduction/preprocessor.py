@@ -22,6 +22,12 @@ from .reducers import experimental as _experimental_reducer  # noqa: F401
 from .reducers import pca as _pca_reducer  # noqa: F401
 from .reducers import tsne as _tsne_reducer  # noqa: F401
 
+# UMAP is optional
+try:
+    from .reducers import umap as _umap_reducer  # noqa: F401
+except ImportError:
+    pass  # UMAP not available
+
 matplotlib.use("Agg")
 
 
@@ -185,7 +191,7 @@ class DimensionalityReductionPreprocessor(Preprocessor):
         metadata_cols: List[str],
         embedding: np.ndarray,
     ) -> pd.DataFrame:
-        dim_columns = [f"dim{idx+1}" for idx in range(embedding.shape[1])]
+        dim_columns = [f"dim{idx + 1}" for idx in range(embedding.shape[1])]
         projection_df = pd.DataFrame(embedding, columns=dim_columns)
         for column in metadata_cols:
             if column in original_df.columns:

@@ -4,18 +4,26 @@ This module centralises the feature computation logic so it can be reused
 by scripts and tests. It produces deterministic, reproducible feature
 artifacts that combine PrettyMIDI, MusPy, and lightweight music-theory
 metrics.
+
+Features:
+    - Feature selection: Extract all features ("full") or a specific subset
+    - Parallel processing: Use multiple workers for faster extraction
+    - Robust error handling: Continue processing on individual file failures
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import multiprocessing
+import os
 import random
 import shutil
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple, Union
 import warnings
 
 import numpy as np
@@ -52,7 +60,27 @@ def _to_builtin(value: Any) -> Any:
 
 @dataclass(frozen=True)
 class FeatureExtractionConfig:
-    """Configuration for a feature extraction job."""
+    """Configuration for a feature extraction job.
+
+    Attributes:
+        dataset_root: Root directory containing MIDI files.
+        metadata_csv: Optional CSV with file metadata.
+        output_root: Root directory for output artifacts.
+        metadata_index_column: Column name for track IDs in metadata CSV.
+        metadata_path_column: Column name for file paths in metadata CSV.
+        metadata_split_column: Column name for train/valid/test split.
+        include_splits: Splits to include (None = all).
+        extensions: MIDI file extensions to process.
+        run_id: Unique run identifier (auto-generated if None).
+        seed: Random seed for reproducibility.
+        overwrite: Allow overwriting existing output directory.
+        max_files: Maximum number of files to process (None = all).
+        num_workers: Number of worker processes for parallel extraction.
+            1 = sequential, -1 = all available CPUs, N = use N workers.
+        save_per_file: Save individual JSON per MIDI file.
+        features: Feature selection - "full" for all features, or list of
+            specific feature names (e.g., ["pm_note_count", "muspy_pitch_entropy"]).
+    """
 
     dataset_root: Optional[Path]
     metadata_csv: Optional[Path] = None
@@ -66,8 +94,9 @@ class FeatureExtractionConfig:
     seed: int = 7
     overwrite: bool = False
     max_files: Optional[int] = None
-    num_workers: int = 1
+    num_workers: int = 4
     save_per_file: bool = True
+    features: Union[str, Sequence[str]] = "full"
 
     def to_serialisable_dict(self) -> Dict[str, Any]:
         data = {
@@ -87,6 +116,11 @@ class FeatureExtractionConfig:
             "max_files": self.max_files,
             "num_workers": self.num_workers,
             "save_per_file": self.save_per_file,
+            "features": (
+                list(self.features)
+                if isinstance(self.features, (list, tuple))
+                else self.features
+            ),
         }
         return data
 
@@ -402,13 +436,92 @@ def _numeric_feature_subset(features: Dict[str, Any]) -> Dict[str, Any]:
     return numerical
 
 
+def _filter_features(
+    features: Dict[str, Any],
+    requested_features: Union[str, Sequence[str]],
+) -> Tuple[Dict[str, Any], List[str]]:
+    """Filter extracted features to keep only requested ones.
+
+    Args:
+        features: Full dictionary of extracted features.
+        requested_features: "full" to keep all features, or list of specific
+            feature names to keep.
+
+    Returns:
+        Tuple of (filtered_features, missing_features_list).
+        missing_features_list contains features that were requested but not
+        present in this specific file's extraction (may be conditionally
+        available for other files).
+    """
+    if requested_features == "full":
+        return features, []
+
+    requested_set = set(requested_features)
+    available_set = set(features.keys())
+    missing_features = list(requested_set - available_set)
+
+    filtered = {key: features[key] for key in requested_features if key in features}
+    return filtered, missing_features
+
+
+def _get_effective_num_workers(num_workers: int) -> int:
+    """Resolve num_workers to an actual worker count.
+
+    Args:
+        num_workers: Configured worker count. 1 = sequential, -1 = all CPUs.
+
+    Returns:
+        Effective number of worker processes.
+    """
+    if num_workers == -1:
+        return max(1, multiprocessing.cpu_count())
+    return max(1, num_workers)
+
+
+def _extract_single_file_worker(
+    midi_path_str: str,
+) -> Tuple[str, Optional[Dict[str, Any]], List[str], Optional[str]]:
+    """Worker function for parallel feature extraction.
+
+    This function runs in a separate process and extracts features for a single
+    MIDI file. It must be a module-level function to be picklable.
+
+    Args:
+        midi_path_str: String path to the MIDI file.
+
+    Returns:
+        Tuple of (midi_path_str, features, warnings, error).
+    """
+    midi_path = Path(midi_path_str)
+    try:
+        features, extraction_warnings = _extract_features_for_file(midi_path)
+        return midi_path_str, features, extraction_warnings, None
+    except Exception as exc:  # noqa: BLE001 - capture all exceptions in worker
+        return midi_path_str, None, [], str(exc)
+
+
 def run_feature_extraction(
     config: FeatureExtractionConfig,
     *,
     log_level: int = logging.INFO,
 ) -> FeatureExtractionReport:
-    """Execute the feature extraction pipeline."""
+    """Execute the feature extraction pipeline.
 
+    This function extracts features from MIDI files using three backends:
+    - PrettyMIDI (pm_* features)
+    - MusPy (muspy_* features)
+    - Music theory (theory_* features)
+
+    Supports parallel processing with configurable number of workers and
+    feature filtering to extract only specific features.
+
+    Args:
+        config: Feature extraction configuration.
+        log_level: Logging level (default: INFO).
+
+    Returns:
+        FeatureExtractionReport with paths to output artifacts and statistics.
+    """
     _initialise_seeds(config.seed)
 
     run_id = _generate_run_id(config)
@@ -420,32 +533,124 @@ def run_feature_extraction(
     logger = _create_logger(log_path, log_level)
     logger.info("Starting feature extraction run %s", run_id)
 
+    # Log configuration
+    effective_workers = _get_effective_num_workers(config.num_workers)
+    logger.info(f"Using {effective_workers} worker(s) for feature extraction")
+    if config.features != "full":
+        logger.info(
+            f"Feature filtering enabled: {len(config.features)} features requested"
+        )
+
     items = _collect_processing_items(config, logger)
     if not items:
         logger.warning("No MIDI files discovered. Nothing to process.")
 
+    # Build a mapping from midi_path_str to item for result matching
+    path_to_item: Dict[str, _ProcessingItem] = {
+        str(item.midi_path): item for item in items
+    }
+
     results: List[_FeatureExtractionResult] = []
-    for item in items:
-        try:
-            features, warnings = _extract_features_for_file(item.midi_path)
-            results.append(
-                _FeatureExtractionResult(
-                    item=item,
-                    features=features,
-                    warnings=warnings,
+    # Track features that were missing in at least one file (conditionally available)
+    missing_features_per_file: Set[str] = set()
+    # Track features that were found in at least one file (to distinguish truly unknown)
+    features_seen_in_any_file: Set[str] = set()
+
+    # Choose sequential or parallel processing
+    if effective_workers == 1:
+        # Sequential processing
+        logger.info(f"Processing {len(items)} files sequentially...")
+        for idx, item in enumerate(items):
+            if (idx + 1) % 100 == 0 or idx == 0:
+                logger.info(f"Processing file {idx + 1}/{len(items)}")
+            try:
+                features, extraction_warnings = _extract_features_for_file(
+                    item.midi_path
                 )
-            )
-            logger.debug("Extracted features for %s", item.midi_path)
-        except Exception as exc:  # noqa: BLE001 - log full exception details
-            logger.exception("Failed to process %s", item.midi_path)
-            results.append(
-                _FeatureExtractionResult(
-                    item=item,
-                    features=None,
-                    warnings=[],
-                    error=str(exc),
+                features_seen_in_any_file.update(features.keys())
+                # Apply feature filtering
+                filtered_features, missing = _filter_features(
+                    features,
+                    config.features,
                 )
+                missing_features_per_file.update(missing)
+                results.append(
+                    _FeatureExtractionResult(
+                        item=item,
+                        features=filtered_features,
+                        warnings=extraction_warnings,
+                    )
+                )
+            except Exception as exc:  # noqa: BLE001 - log full exception details
+                logger.exception("Failed to process %s", item.midi_path)
+                results.append(
+                    _FeatureExtractionResult(
+                        item=item,
+                        features=None,
+                        warnings=[],
+                        error=str(exc),
+                    )
+                )
+    else:
+        # Parallel processing with ProcessPoolExecutor
+        logger.info(
+            f"Processing {len(items)} files with {effective_workers} workers..."
+        )
+        midi_paths = [str(item.midi_path) for item in items]
+
+        completed = 0
+        with ProcessPoolExecutor(max_workers=effective_workers) as executor:
+            future_to_path = {
+                executor.submit(_extract_single_file_worker, path): path
+                for path in midi_paths
+            }
+
+            for future in as_completed(future_to_path):
+                midi_path_str, features, extraction_warnings, error = future.result()
+                item = path_to_item[midi_path_str]
+
+                if features is not None:
+                    features_seen_in_any_file.update(features.keys())
+                    # Apply feature filtering
+                    filtered_features, missing = _filter_features(
+                        features,
+                        config.features,
+                    )
+                    missing_features_per_file.update(missing)
+                    results.append(
+                        _FeatureExtractionResult(
+                            item=item,
+                            features=filtered_features,
+                            warnings=extraction_warnings,
+                        )
+                    )
+                else:
+                    logger.error(f"Failed to process {midi_path_str}: {error}")
+                    results.append(
+                        _FeatureExtractionResult(
+                            item=item,
+                            features=None,
+                            warnings=extraction_warnings,
+                            error=error,
+                        )
+                    )
+
+                completed += 1
+                if completed % 100 == 0:
+                    logger.info(f"Completed {completed}/{len(items)} files")
+
+        logger.info(f"Parallel processing complete: {completed} files processed")
+
+    # Log warnings about features that were never found in any file (truly unknown)
+    if config.features != "full":
+        requested_set = set(config.features)
+        truly_unknown = missing_features_per_file - features_seen_in_any_file
+        if truly_unknown:
+            logger.warning(
+                f"Requested features never found in any file: {sorted(truly_unknown)}"
             )
+        # Conditionally available features (found in some files but not others) are normal
+        # and don't need a warning - they'll result in NaN values which is expected
 
     per_file_dir: Optional[Path] = None
     if config.save_per_file:

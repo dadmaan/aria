@@ -2,7 +2,7 @@
 
 from .config import DimensionalityReductionConfig
 from .preprocessor import DimensionalityReductionPreprocessor
-from .reducers import DimensionalityReducer, PCAReducer, TSNEReducer
+from .reducers import DimensionalityReducer, PCAReducer, TSNEReducer, UMAPReducer
 from .tsne_preprocessor import (  # noqa: F401
     TSNEPreprocessor,
     TSNEPreprocessorConfig,
@@ -14,6 +14,7 @@ __all__ = [
     "DimensionalityReducer",
     "PCAReducer",
     "TSNEReducer",
+    "UMAPReducer",
     "TSNEPreprocessor",
     "TSNEPreprocessorConfig",
 ]
