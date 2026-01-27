@@ -81,6 +81,69 @@ algorithm:
   is_double: true
 ```
 
+## Preprocessing
+
+ARIA includes a comprehensive preprocessing pipeline that transforms raw MIDI files into trained GHSOM models for reinforcement learning.
+
+### Pipeline Stages
+
+1. **Feature Extraction**: Converts MIDI files to musical features using multiple backends (muspy, pretty_midi, theory-based)
+2. **Dimensionality Reduction**: Reduces feature space using t-SNE, PCA, or UMAP for GHSOM training
+3. **GHSOM Training**: Trains hierarchical self-organizing maps to discover musical motifs and structure
+
+### Usage
+
+```bash
+# Full pipeline from raw MIDI to GHSOM
+python scripts/preprocessing/run_preprocessing_pipeline.py --config configs/preprocessing.yaml
+
+# Resume from existing features
+python scripts/preprocessing/run_preprocessing_pipeline.py \
+    --config configs/preprocessing.yaml \
+    --skip-feature-extraction \
+    --features-artifact artifacts/features/raw/existing
+
+# Skip to GHSOM training only
+python scripts/preprocessing/run_preprocessing_pipeline.py \
+    --config configs/preprocessing.yaml \
+    --skip-feature-extraction \
+    --skip-dimensionality-reduction \
+    --reduced-features-artifact artifacts/features/reduced/existing
+```
+
+### Configuration
+
+Preprocessing uses `configs/preprocessing.yaml`:
+
+```yaml
+feature_extraction:
+  backend: "muspy"  # muspy, pretty_midi, theory
+  output_dir: "artifacts/features/raw"
+
+dimensionality_reduction:
+  method: "tsne"    # tsne, pca, umap
+  dimensions: 32
+  output_dir: "artifacts/features/reduced"
+
+ghsom_training:
+  output_dir: "artifacts/ghsom"
+  hierarchy_depth: 4
+  learning_rate: 0.1
+```
+
+### Output Structure
+
+```
+artifacts/
+├── features/
+│   ├── raw/           # Extracted musical features
+│   └── reduced/       # Dimensionally reduced features
+└── ghsom/             # Trained GHSOM models
+    ├── hierarchy.pkl
+    ├── neuron_table.pkl
+    └── config.json
+```
+
 ## Training
 
 ```bash
@@ -180,16 +243,19 @@ aria/
 │   ├── environments/       # Gymnasium-compliant music env
 │   ├── inference/          # Interactive & preference-guided sessions
 │   ├── networks/           # Q-networks (DRQN, MLP, Dueling, C51, Rainbow)
+│   ├── preprocessing/      # Feature extraction & dimensionality reduction
 │   ├── training/           # Tianshou trainer
 │   └── utils/              # Logging, rewards, MIDI utilities
 ├── scripts/
 │   ├── training/           # run_training.py
 │   ├── inference/          # run_inference_pipeline.py
-│   └── benchmark/          # Ablation studies
+│   └── preprocessing/      # run_preprocessing_pipeline.py
 ├── configs/
 │   ├── training.yaml
 │   ├── inference.yaml
+│   ├── preprocessing.yaml
 │   └── benchmark/          # 16+ config variants
+├── artifacts/              # Preprocessing outputs (features, GHSOM models)
 ├── docker/
 │   ├── Dockerfile
 │   └── docker-compose.yaml

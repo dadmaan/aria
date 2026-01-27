@@ -21,14 +21,16 @@ The analysis pipeline follows this general order:
 
 ### 1. Data Exploration (`01_data_exploration/`)
 
-Start here to understand your dataset characteristics.
+Start here to understand your dataset characteristics and validate t-SNE embedding quality.
 
 | Script | Description |
 |--------|-------------|
 | `explore_dataset.py` | Comprehensive EDA with visualizations for genre, BPM, pitch range, time signatures, and data quality |
 | `visualize_tsne_embeddings.py` | t-SNE embedding visualization with automatic K-means clustering |
+| `compare_feature_set_tsne.py` | Compare t-SNE quality between Full 33D vs Filtered 17D feature sets |
+| `analyze_tsne_stability.py` | Comprehensive t-SNE stability analysis: seed robustness, perplexity sensitivity, embedding quality metrics |
 
-**Output:** Distribution plots, correlation matrices, t-SNE visualizations
+**Output:** Distribution plots, correlation matrices, t-SNE visualizations, stability analysis reports (ARI/NMI heatmaps, perplexity curves, trustworthiness plots)
 
 ### 2. Feature Importance (`02_feature_importance/`)
 
@@ -109,6 +111,10 @@ python scripts/analysis/01_data_exploration/explore_dataset.py \
     --metadata_path artifacts/features/metadata.csv \
     --output_dir outputs/eda
 
+# 1b. Analyze t-SNE stability (optional, comprehensive validation)
+python scripts/analysis/01_data_exploration/analyze_tsne_stability.py \
+    --output-dir outputs/tsne_stability
+
 # 2. Analyze feature importance
 python scripts/analysis/02_feature_importance/scripts/run_full_pipeline.py \
     --data_path artifacts/features/features_numeric.csv \
@@ -129,7 +135,7 @@ python scripts/analysis/06_training_analysis/analyze_training_runs.py \
 
 Most scripts require:
 - pandas, numpy, matplotlib, seaborn
-- scikit-learn (for clustering metrics)
+- scikit-learn (for clustering metrics, ARI/NMI, trustworthiness)
 - shap (for feature importance)
 - tensorboard (for training analysis)
 
