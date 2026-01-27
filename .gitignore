@@ -160,3 +160,6 @@ misc/
 outputs/
 wandb/
 test/
+.local/
+CLAUDE.md
+.devcontainer/

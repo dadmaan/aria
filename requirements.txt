@@ -44,5 +44,5 @@ ruff>=0.1.0
 flake8>=6.0.0,<8.0.0
 
 # GHSOM packages (local)
--e ./ghsom-py
--e ./ghsom-toolkits
+# -e ./ghsom-py
+# -e ./ghsom-toolkits
