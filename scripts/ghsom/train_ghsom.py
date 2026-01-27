@@ -26,14 +26,14 @@ def _parse_args() -> argparse.Namespace:
         required=True,
         help="Path to the feature artifact (CSV/NumPy file or run directory).",
     )
-    parser.add_argument(
-        "--feature-type",
-        dest="feature_type",
-        type=str,
-        default="tsne",
-        choices=["raw", "tsne"],
-        help="Specify whether to load raw numeric features or reduced embeddings.",
-    )
+	parser.add_argument(
+		"--feature-type",
+		dest="feature_type",
+		type=str,
+		default="tsne",
+		choices=["raw", "tsne", "pca", "umap", "reduced"],
+		help="Specify whether to load raw numeric features or reduced embeddings (tsne/pca/umap/reduced).",
+	)
     parser.add_argument(
         "--metadata-columns",
         dest="metadata_columns",
