@@ -199,6 +199,22 @@ class LoggingManager:
             except Exception as e:
                 self.logger.warning(f"Failed to log to WandB: {e}")
 
+    def exception(self, message: str, *args: Any, **kwargs: Any) -> None:
+        """Log exception message with traceback.
+
+        Args:
+            message: Log message (may contain % formatting)
+            *args: Arguments for % formatting
+            **kwargs: Additional key-value pairs for WandB
+        """
+        self.logger.exception(message, *args)
+
+        if self.enable_wandb and self.wandb_initialized and kwargs:
+            try:
+                wandb.log(kwargs)
+            except Exception as e:
+                self.logger.warning(f"Failed to log to WandB: {e}")
+
     def log_metrics(self, metrics: Dict[str, Any], step: Optional[int] = None) -> None:
         """Log metrics to both standard logging and WandB.
 

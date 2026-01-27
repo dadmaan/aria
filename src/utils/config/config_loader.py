@@ -195,7 +195,7 @@ class ConfigLoader:
 
         Args:
             config_path: Path to config file. If None, searches for default config
-                        in order: agent_config.yaml, agent_config.yml, agent_config.json
+                        in order: training.yaml, agent_config.yaml, agent_config.yml, agent_config.json
         """
         if config_path is None:
             config_path = self._find_default_config()
@@ -207,15 +207,16 @@ class ConfigLoader:
         """Find the default configuration file, preferring YAML over JSON."""
         configs_dir = Path("configs")
         candidates = [
-            configs_dir / "agent_config.yaml",
-            configs_dir / "agent_config.yml",
-            configs_dir / "agent_config.json",
+            configs_dir / "training.yaml",  # New primary config file
+            configs_dir / "agent_config.yaml",  # Legacy name
+            configs_dir / "agent_config.yml",  # Legacy name
+            configs_dir / "agent_config.json",  # Legacy name
         ]
         for candidate in candidates:
             if candidate.exists():
                 return candidate
-        # Fall back to JSON path (will error on load if not found)
-        return configs_dir / "agent_config.json"
+        # Fall back to training.yaml path (will error on load if not found)
+        return configs_dir / "training.yaml"
 
     def _load_file(self, path: Path) -> Dict[str, Any]:
         """Load configuration from file, auto-detecting format."""
