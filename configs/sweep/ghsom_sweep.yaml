@@ -1,0 +1,158 @@
+# =============================================================================
+# WANDB SWEEP CONFIGURATION: GHSOM HYPERPARAMETER TUNING
+# =============================================================================
+# Multi-objective optimization for GHSOM model architecture exploration
+#
+# This sweep configuration explores GHSOM hyperparameters to find models with:
+#   - Target cluster count (50-200 for RL action space)
+#   - Low quantization error (mean_activation)
+#   - High neuron utilization (dispersion_rate)
+#
+# Usage:
+#   # Initialize and run sweep
+#   python scripts/ghsom/run_ghsom_sweep.py --config configs/sweep/ghsom_sweep.yaml --count 150
+#
+#   # Or run agents manually after creating sweep
+#   wandb agent <entity>/<project>/<sweep_id>
+#
+# Reference: https://docs.wandb.ai/guides/sweeps/define-sweep-configuration
+# =============================================================================
+
+# =============================================================================
+# SWEEP CONTROL PARAMETERS
+# =============================================================================
+# These control the sweep launcher behavior (run_ghsom_sweep.py)
+# Override via CLI: --project, --entity, --count, --reduced-artifact, --feature-type
+
+sweep_control:
+  # WandB project and entity
+  project: "aria-ghsom-sweep"          # WandB project name
+  entity: null                          # WandB entity/team (null = default)
+  
+  # Number of trials to run
+  count: 500                            # Total sweep trials
+  
+  # Data source
+  reduced_artifact: "artifacts/preprocessing/umap/reduced/reduced/embedding.npy"
+  feature_type: "umap"                  # "umap" | "tsne" | "pca" | "raw"
+  
+  # Agent settings (run_ghsom_sweep_agent.py)
+  seed: 42                              # Random seed for reproducibility
+  n_workers: -1                         # Parallel GHSOM workers (-1 = all CPUs)
+  
+  # ---------------------------------------------------------------------------
+  # COMPOSITE SCORE CONFIGURATION
+  # ---------------------------------------------------------------------------
+  # The composite score is used by Bayesian optimization to guide the search.
+  # It combines three objectives into a single metric.
+  
+  scoring:
+    # Component weights (must sum to 1.0, will be normalized if not)
+    weights:
+      cluster_score: 0.40               # Target cluster count adherence
+      activation: 0.35                  # Data fit quality (lower mean_activation is better)
+      dispersion: 0.25                  # Neuron utilization (higher is better)
+    
+    # Target cluster count range for RL action space
+    # Models within this range receive cluster_score = 1.0
+    # Models outside decay based on distance from the range
+    target_cluster_range:
+      min: 50                           # Minimum acceptable clusters
+      max: 200                          # Maximum acceptable clusters
+    
+    # Normalization bounds for mean_activation metric
+    # Used to convert raw activation to [0, 1] score
+    activation_bounds:
+      min: 0.0                          # Perfect fit (score = 1.0)
+      max: 2.0                          # Very poor fit (score = 0.0)
+
+# =============================================================================
+# OPTIMIZATION SETTINGS
+# =============================================================================
+
+# Sweep method: bayes (Bayesian optimization), grid, or random
+method: bayes
+
+# Metric to optimize (used by Bayesian optimizer)
+metric:
+  name: composite_score
+  goal: maximize
+
+# =============================================================================
+# HYPERPARAMETERS TO SWEEP
+# =============================================================================
+# These are passed to the agent script via wandb.config
+#
+# Key parameters affecting GHSOM structure:
+#   t1: Quantization threshold for root map
+#       - Lower values -> larger root maps, more clusters
+#       - Higher values -> smaller root maps, fewer clusters
+#
+#   t2: Quantization threshold for child maps
+#       - Lower values -> deeper hierarchies, more granular clustering
+#       - Higher values -> shallower hierarchies, coarser clustering
+#
+# Training parameters:
+#   learning_rate, decay, gaussian_sigma, epochs, grow_maxiter
+# =============================================================================
+
+parameters:
+  # Primary structure parameters (most impactful)
+  t1:
+    distribution: uniform
+    min: 0.1
+    max: 0.8
+
+  t2:
+    distribution: uniform
+    min: 0.01
+    max: 0.3
+
+  # Training dynamics parameters
+  learning_rate:
+    distribution: log_uniform_values
+    min: 0.01
+    max: 0.3
+
+  decay:
+    distribution: uniform
+    min: 0.9
+    max: 0.999
+
+  gaussian_sigma:
+    distribution: uniform
+    min: 0.5
+    max: 3.0
+
+  # Iteration parameters
+  epochs:
+    distribution: int_uniform
+    min: 10
+    max: 100
+
+  grow_maxiter:
+    distribution: int_uniform
+    min: 10
+    max: 50
+
+# =============================================================================
+# SWEEP EXECUTION SETTINGS
+# =============================================================================
+
+# Program to run for each trial (relative to project root)
+program: scripts/ghsom/run_ghsom_sweep_agent.py
+
+# Command to execute the program
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args}
+
+# Early termination settings (optional)
+# Uncomment to enable early stopping of poorly performing runs
+# early_terminate:
+#   type: hyperband
+#   min_iter: 3
+#   eta: 3
+#   s: 2
