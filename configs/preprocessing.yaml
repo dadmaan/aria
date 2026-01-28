@@ -35,7 +35,7 @@ pipeline:
 
 resume:
   features_artifact: "artifacts/features/filtered/commu_full_mapped"  # Path to existing features (skips extraction)
-  reduced_artifact: null                # Path to existing reduced features (skips extraction + reduction)
+  reduced_artifact: "artifacts/preprocessing/umap/reduced/reduced/embedding.npy" # Path to existing reduced features (skips extraction + reduction)
 
 # =============================================================================
 # STAGE 1: FEATURE EXTRACTION
