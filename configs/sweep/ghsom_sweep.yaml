@@ -26,11 +26,11 @@
 
 sweep_control:
   # WandB project and entity
-  project: "aria-ghsom-sweep"          # WandB project name
+  project: "TEST"           # WandB project name
   entity: null                          # WandB entity/team (null = default)
   
   # Number of trials to run
-  count: 500                            # Total sweep trials
+  count: 200                            # Total sweep trials
   
   # Data source
   reduced_artifact: "artifacts/preprocessing/umap/reduced/reduced/embedding.npy"
