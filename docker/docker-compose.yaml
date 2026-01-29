@@ -17,6 +17,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
     image: aria-music-generation:gpu
     container_name: aria-music-rl
 
@@ -87,6 +90,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
     image: aria-music-generation:gpu
     container_name: aria-jupyter
     profiles:

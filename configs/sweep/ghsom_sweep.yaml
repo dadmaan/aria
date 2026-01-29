@@ -26,7 +26,7 @@
 
 sweep_control:
   # WandB project and entity
-  project: "TEST"           # WandB project name
+  project: "aria-UMAP-ghsom-sweep"           # WandB project name
   entity: null                          # WandB entity/team (null = default)
   
   # Number of trials to run

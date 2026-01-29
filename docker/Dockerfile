@@ -112,8 +112,11 @@ COPY --from=builder /tmp/ghsom/ghsom-py /opt/ghsom-py
 COPY --from=builder /tmp/ghsom/ghsom-toolkits /opt/ghsom-toolkits
 RUN pip install --no-cache-dir -e /opt/ghsom-py -e /opt/ghsom-toolkits
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash appuser
+# Create non-root user for security (match host UID/GID when provided)
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd --gid ${GROUP_ID} appuser \
+    && useradd --uid ${USER_ID} --gid ${GROUP_ID} --create-home --shell /bin/bash appuser
 
 # Set working directory
 WORKDIR /workspace
