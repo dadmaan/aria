@@ -33,11 +33,13 @@ Example Logged Metrics:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import math
 import os
 import sys
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, cast
 
@@ -316,6 +318,8 @@ def run_ghsom_trial(
     feature_type: str = DEFAULT_FEATURE_TYPE,
     seed: int = 42,
     n_workers: int = -1,
+    output_dir: Optional[Path] = None,
+    trial_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run a single GHSOM training trial with given hyperparameters.
 
@@ -326,6 +330,8 @@ def run_ghsom_trial(
         feature_type: Type of features ("umap", "tsne", "pca", "raw").
         seed: Random seed for reproducibility.
         n_workers: Number of workers for parallel training (-1 = all CPUs).
+        output_dir: Optional directory to save trial results locally.
+        trial_id: Optional trial identifier for local file naming.
 
     Returns:
         Dictionary containing:
@@ -335,14 +341,21 @@ def run_ghsom_trial(
         - scoring_config: Scoring configuration used
         - success: Whether training succeeded
         - error: Error message if training failed
+        - trial_id: Trial identifier (if provided or generated)
     """
+    # Generate trial_id if not provided
+    if trial_id is None:
+        trial_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+
     result: Dict[str, Any] = {
+        "trial_id": trial_id,
         "metrics": {},
         "scores": {},
         "config": {},
         "scoring_config": scoring_config.to_dict(),
         "success": False,
         "error": None,
+        "timestamp": datetime.now().isoformat(),
     }
 
     try:
@@ -413,6 +426,17 @@ def run_ghsom_trial(
             "dispersion_score": 0.0,
         }
 
+    # Save trial result locally if output_dir is provided
+    if output_dir is not None:
+        try:
+            output_dir.mkdir(parents=True, exist_ok=True)
+            trial_file = output_dir / f"trial_{result['trial_id']}.json"
+            with trial_file.open("w", encoding="utf-8") as f:
+                json.dump(result, f, indent=2, default=str)
+            logger.info(f"Saved trial result to: {trial_file}")
+        except Exception as save_error:
+            logger.warning(f"Failed to save trial result locally: {save_error}")
+
     return result
 
 
@@ -425,13 +449,19 @@ def run_sweep_agent(
     dry_run: bool = False,
     seed: int = 42,
     n_workers: int = -1,
+    output_dir: Optional[Path] = None,
 ) -> int:
     """Run the WandB sweep agent.
 
-    This function is called by the WandB sweep controller. It:
-    1. Initializes a WandB run (receives hyperparams via wandb.config)
+    This function can be called in two ways:
+    1. Via wandb.agent() - run is already initialized, use existing wandb.run
+    2. Standalone CLI - needs to initialize a new WandB run
+
+    It:
+    1. Gets/initializes a WandB run (receives hyperparams via wandb.config)
     2. Runs GHSOM training with those hyperparams
     3. Logs all metrics to WandB
+    4. Optionally saves results locally
 
     Args:
         reduced_artifact_path: Path to reduced features artifact.
@@ -442,6 +472,7 @@ def run_sweep_agent(
         dry_run: If True, skip WandB and use default hyperparams for testing.
         seed: Random seed for reproducibility.
         n_workers: Number of workers for parallel training.
+        output_dir: Optional directory to save trial results locally.
 
     Returns:
         Exit code (0 for success, 1 for failure).
@@ -481,6 +512,7 @@ def run_sweep_agent(
             feature_type=feature_type,
             seed=seed,
             n_workers=n_workers,
+            output_dir=output_dir,
         )
 
         if result["success"]:
@@ -492,20 +524,32 @@ def run_sweep_agent(
             logger.error(f"Dry run failed: {result['error']}")
             return 1
 
-    # Initialize WandB run (receives hyperparams from sweep controller)
-    logger.info(f"Initializing WandB run for project: {project}")
-    run = wandb.init(project=project, entity=entity)
+    # Check if we're already inside a wandb.agent() context
+    # If wandb.run exists and is active, we're being called from wandb.agent()
+    # and should NOT reinitialize - just use the existing run
+    run_was_preinitialized = wandb.run is not None
+
+    if run_was_preinitialized:
+        logger.info("Using existing WandB run (called from wandb.agent)")
+        run = wandb.run
+    else:
+        # Standalone execution - initialize a new run
+        logger.info(f"Initializing new WandB run for project: {project}")
+        run = wandb.init(project=project, entity=entity)
 
     if run is None:
-        logger.error("Failed to initialize WandB run")
+        logger.error("Failed to get/initialize WandB run")
         return 1
+
+    # Use run ID as trial ID for local saving
+    trial_id = run.id if run.id else datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
     try:
         # Get hyperparameters from WandB config
         hyperparams = dict(wandb.config)
         logger.info(f"Received hyperparameters: {hyperparams}")
 
-        # Log artifact path and scoring config
+        # Log artifact path and scoring config (only if not already set)
         wandb.config.update(
             {
                 "reduced_artifact_path": str(reduced_artifact_path),
@@ -524,6 +568,8 @@ def run_sweep_agent(
             feature_type=feature_type,
             seed=seed,
             n_workers=n_workers,
+            output_dir=output_dir,
+            trial_id=trial_id,
         )
 
         # Log all metrics to WandB
@@ -565,7 +611,10 @@ def run_sweep_agent(
         return 1
 
     finally:
-        wandb.finish()
+        # Only finish the run if we initialized it ourselves
+        # If called from wandb.agent(), the agent manages the run lifecycle
+        if not run_was_preinitialized:
+            wandb.finish()
 
 
 # =============================================================================

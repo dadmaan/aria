@@ -35,11 +35,13 @@ Output:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 
@@ -55,6 +57,7 @@ if str(PROJECT_ROOT) not in sys.path:
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "configs" / "sweep" / "ghsom_sweep.yaml"
 DEFAULT_PROJECT = "aria-ghsom-sweep"
 DEFAULT_REDUCED_ARTIFACT = "artifacts/preprocessing/umap/reduced/reduced/embedding.npy"
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "ghsom_sweep"
 DEFAULT_COUNT = 150
 
 # =============================================================================
@@ -205,11 +208,14 @@ def run_sweep_agent(
     reduced_artifact_path: Path,
     feature_type: str,
     scoring_config_dict: Optional[Dict[str, Any]] = None,
+    output_dir: Optional[Path] = None,
 ) -> int:
     """Run WandB sweep agent(s).
 
-    This function uses subprocess to run the agent script, which allows
-    for proper signal handling and cleanup.
+    This function uses wandb.agent() to run trials. Each trial will:
+    1. Train a GHSOM model with hyperparameters from the sweep controller
+    2. Log metrics to WandB
+    3. Optionally save results locally to output_dir
 
     Args:
         sweep_id: WandB sweep ID.
@@ -219,6 +225,7 @@ def run_sweep_agent(
         reduced_artifact_path: Path to reduced features artifact.
         feature_type: Type of features to load.
         scoring_config_dict: Scoring configuration dictionary.
+        output_dir: Optional directory to save trial results locally.
 
     Returns:
         Exit code from agent execution.
@@ -238,6 +245,8 @@ def run_sweep_agent(
 
     logger.info(f"Starting sweep agent for: {sweep_path}")
     logger.info(f"Running {count} trials")
+    if output_dir:
+        logger.info(f"Saving results to: {output_dir}")
 
     # Set environment variables for the agent
     env = os.environ.copy()
@@ -270,6 +279,7 @@ def run_sweep_agent(
             project=project,
             entity=entity,
             dry_run=False,
+            output_dir=output_dir,
         )
 
     try:
@@ -289,11 +299,154 @@ def run_sweep_agent(
         return 1
 
 
+# =============================================================================
+# OUTPUT MANAGEMENT
+# =============================================================================
+
+
+def create_output_directory(
+    base_output_dir: Path,
+    sweep_id: str,
+) -> Path:
+    """Create a timestamped output directory for sweep results.
+
+    Args:
+        base_output_dir: Base directory for sweep outputs.
+        sweep_id: WandB sweep ID (used in directory name).
+
+    Returns:
+        Path to the created output directory.
+    """
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Use sweep_id suffix (last 8 chars) for uniqueness
+    sweep_suffix = sweep_id[-8:] if len(sweep_id) >= 8 else sweep_id
+    run_id = f"{timestamp}_{sweep_suffix}"
+    output_dir = base_output_dir / run_id
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Created output directory: {output_dir}")
+    return output_dir
+
+
+def save_sweep_metadata(
+    output_dir: Path,
+    sweep_id: str,
+    project: str,
+    entity: Optional[str],
+    sweep_config: Dict[str, Any],
+    reduced_artifact_path: Path,
+    feature_type: str,
+    count: int,
+) -> Path:
+    """Save sweep metadata to a JSON file.
+
+    Args:
+        output_dir: Directory to save metadata.
+        sweep_id: WandB sweep ID.
+        project: WandB project name.
+        entity: WandB entity/team name.
+        sweep_config: Full sweep configuration dictionary.
+        reduced_artifact_path: Path to reduced features artifact.
+        feature_type: Type of features.
+        count: Number of trials.
+
+    Returns:
+        Path to the saved metadata file.
+    """
+    metadata = {
+        "sweep_id": sweep_id,
+        "project": project,
+        "entity": entity,
+        "reduced_artifact_path": str(reduced_artifact_path),
+        "feature_type": feature_type,
+        "count": count,
+        "created_at": datetime.now().isoformat(),
+        "sweep_config": sweep_config,
+    }
+
+    metadata_path = output_dir / "sweep_metadata.json"
+    with metadata_path.open("w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2, default=str)
+
+    logger.info(f"Saved sweep metadata to: {metadata_path}")
+    return metadata_path
+
+
+def compile_sweep_results(output_dir: Path) -> Optional[Path]:
+    """Compile all trial results into a single sweep_results.json file.
+
+    Args:
+        output_dir: Directory containing trial_*.json files.
+
+    Returns:
+        Path to the compiled results file, or None if no trials found.
+    """
+    trial_files = sorted(output_dir.glob("trial_*.json"))
+
+    if not trial_files:
+        logger.warning(f"No trial files found in: {output_dir}")
+        return None
+
+    trials: List[Dict[str, Any]] = []
+    for trial_file in trial_files:
+        try:
+            with trial_file.open("r", encoding="utf-8") as f:
+                trial_data = json.load(f)
+                trials.append(trial_data)
+        except Exception as e:
+            logger.warning(f"Failed to load trial file {trial_file}: {e}")
+
+    if not trials:
+        logger.warning("No valid trial data found")
+        return None
+
+    # Compute summary statistics
+    successful_trials = [t for t in trials if t.get("success", False)]
+    composite_scores = [
+        t["scores"]["composite_score"]
+        for t in successful_trials
+        if "scores" in t and "composite_score" in t["scores"]
+    ]
+
+    summary = {
+        "total_trials": len(trials),
+        "successful_trials": len(successful_trials),
+        "failed_trials": len(trials) - len(successful_trials),
+        "success_rate": len(successful_trials) / len(trials) if trials else 0,
+    }
+
+    if composite_scores:
+        import numpy as np
+
+        summary.update(
+            {
+                "composite_score_mean": float(np.mean(composite_scores)),
+                "composite_score_std": float(np.std(composite_scores)),
+                "composite_score_min": float(np.min(composite_scores)),
+                "composite_score_max": float(np.max(composite_scores)),
+            }
+        )
+
+    results = {
+        "summary": summary,
+        "compiled_at": datetime.now().isoformat(),
+        "trials": trials,
+    }
+
+    results_path = output_dir / "sweep_results.json"
+    with results_path.open("w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, default=str)
+
+    logger.info(f"Compiled {len(trials)} trial results to: {results_path}")
+    return results_path
+
+
 def print_sweep_info(
     sweep_id: str,
     project: str,
     entity: Optional[str],
     reduced_artifact_path: Path,
+    output_dir: Optional[Path] = None,
 ) -> None:
     """Print sweep information and usage instructions.
 
@@ -302,6 +455,7 @@ def print_sweep_info(
         project: WandB project name.
         entity: WandB entity/team name (optional).
         reduced_artifact_path: Path to reduced features artifact.
+        output_dir: Optional output directory for local results.
     """
     if entity:
         sweep_path = f"{entity}/{project}/{sweep_id}"
@@ -317,6 +471,8 @@ def print_sweep_info(
     print(f"Sweep Path:   {sweep_path}")
     print(f"Sweep URL:    {sweep_url}")
     print(f"Artifact:     {reduced_artifact_path}")
+    if output_dir:
+        print(f"Output Dir:   {output_dir}")
     print("=" * 80)
     print("\nTo run sweep agents manually (can be distributed across machines):")
     print(f"  wandb agent {sweep_path}")
@@ -461,6 +617,12 @@ def main() -> int:
         else sweep_control.get("feature_type", "umap")
     )
 
+    # Resolve output settings from config
+    output_config = sweep_control.get("output", {})
+    output_enabled = output_config.get("enabled", True)
+    base_output_dir_str = output_config.get("output_dir", "outputs/ghsom_sweep")
+    base_output_dir = (PROJECT_ROOT / base_output_dir_str).resolve()
+
     # Validate artifact path
     if not reduced_artifact_path.exists():
         logger.error(f"Reduced artifact not found: {reduced_artifact_path}")
@@ -477,6 +639,7 @@ def main() -> int:
     logger.info(f"Count: {count}")
     logger.info(f"Reduced artifact: {reduced_artifact_path}")
     logger.info(f"Feature type: {feature_type}")
+    logger.info(f"Local output enabled: {output_enabled}")
 
     # Initialize or resume sweep
     if args.sweep_id:
@@ -489,12 +652,34 @@ def main() -> int:
             logger.error(str(e))
             return 1
 
+    # Create output directory if enabled
+    output_dir: Optional[Path] = None
+    if output_enabled:
+        output_dir = create_output_directory(base_output_dir, sweep_id)
+        save_sweep_metadata(
+            output_dir=output_dir,
+            sweep_id=sweep_id,
+            project=project,
+            entity=entity,
+            sweep_config=sweep_config,
+            reduced_artifact_path=reduced_artifact_path,
+            feature_type=feature_type,
+            count=count,
+        )
+        logger.info(f"Output directory: {output_dir}")
+
     # Print sweep info
-    print_sweep_info(sweep_id, project, entity, reduced_artifact_path)
+    print_sweep_info(sweep_id, project, entity, reduced_artifact_path, output_dir)
 
     # Run agents if not init-only
     if args.init_only:
         logger.info("Initialization complete. Use 'wandb agent' to start agents.")
+        if output_dir:
+            logger.info(f"Output directory created at: {output_dir}")
+            logger.info(
+                "Note: When running distributed agents, set "
+                "GHSOM_SWEEP_OUTPUT_DIR environment variable to save results locally."
+            )
         return 0
 
     logger.info(f"Starting {count} sweep trials...")
@@ -502,7 +687,7 @@ def main() -> int:
     # Extract scoring config dict from sweep_control
     scoring_config_dict = sweep_control.get("scoring", {})
 
-    return run_sweep_agent(
+    exit_code = run_sweep_agent(
         sweep_id=sweep_id,
         project=project,
         entity=entity,
@@ -510,7 +695,19 @@ def main() -> int:
         reduced_artifact_path=reduced_artifact_path,
         feature_type=feature_type,
         scoring_config_dict=scoring_config_dict,
+        output_dir=output_dir,
     )
+
+    # Compile results after sweep completes
+    if output_dir and output_dir.exists():
+        logger.info("Compiling sweep results...")
+        results_path = compile_sweep_results(output_dir)
+        if results_path:
+            print(f"\nResults compiled to: {results_path}")
+            print("Run analysis with:")
+            print(f"  python scripts/ghsom/analyze_ghsom_sweep.py --input {output_dir}")
+
+    return exit_code
 
 
 if __name__ == "__main__":

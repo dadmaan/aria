@@ -12,7 +12,7 @@ Usage:
     python scripts/ghsom/analyze_ghsom_sweep.py --input outputs/ghsom_sweep/
 
     # Export top N configurations
-    python scripts/ghsom/analyze_ghsom_sweep.py --input outputs/ghsom_sweep/ --top 10
+    python scripts/ghsom/analyze_ghsom_sweep.py --input outputs/ghsom_sweep/ --top-k 10
 
     # Generate all visualizations
     python scripts/ghsom/analyze_ghsom_sweep.py --input outputs/ghsom_sweep/ --plot-all
@@ -823,9 +823,10 @@ def _parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--top",
+        "--top-k",
         type=int,
         default=10,
+        dest="top",
         help="Number of top configurations to export (default: 10)",
     )
 
