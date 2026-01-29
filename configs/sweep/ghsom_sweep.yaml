@@ -41,6 +41,17 @@ sweep_control:
   n_workers: -1                         # Parallel GHSOM workers (-1 = all CPUs)
   
   # ---------------------------------------------------------------------------
+  # LOCAL OUTPUT SETTINGS
+  # ---------------------------------------------------------------------------
+  # Control local saving of sweep results (in addition to WandB logging)
+  # Results are saved to: <output_dir>/<timestamp>/
+  
+  output:
+    enabled: true                       # Save results locally (in addition to WandB)
+    output_dir: "outputs/ghsom_sweep"   # Base directory for sweep outputs
+    save_individual_trials: true        # Save each trial as separate JSON file
+  
+  # ---------------------------------------------------------------------------
   # COMPOSITE SCORE CONFIGURATION
   # ---------------------------------------------------------------------------
   # The composite score is used by Bayesian optimization to guide the search.
